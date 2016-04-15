@@ -8,6 +8,9 @@ public class Battleship {
 
     
     public static void main(String[] args) {
-        // TODO code application logic here
+        Board b = new Board(10);
+        Ship s = new Ship(4, true);
+        
+        System.out.println(b.canBePlaced(s, 7, 7));
     }
 }
