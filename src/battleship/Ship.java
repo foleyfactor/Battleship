@@ -7,7 +7,7 @@ package battleship;
 
 public class Ship {
     public int xSize, ySize;
-    public boolean vertical;
+    public boolean vertical, isSunk;
     public int numHits;
     
     public Ship(int s, boolean v) {
@@ -19,9 +19,15 @@ public class Ship {
             this.xSize = s;
             this.ySize = 1;
         }
+        this.isSunk = false;
     }
     
     public void hit() {
         this.numHits ++;
+        if (this.numHits == Math.max(xSize, ySize)) this.sink();
+    }
+    
+    public void sink() {
+        this.isSunk = true;
     }
 }

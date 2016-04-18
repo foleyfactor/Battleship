@@ -27,8 +27,11 @@ public class Player {
     public void fire(int x, int y) {
         if (this.opponent != null) {
             //If the square hasn't already been guessed
-            if (! this.opponent.board.guesses[x][y]) {
-                this.opponent.board.guess(x, y);
+            if (! this.opponent.board.isGuessed(x, y)) {
+                if (this.opponent.board.guess(x, y)) {
+                    System.out.println("You hit a ship!");
+                    this.numHits ++;
+                }
             }
         }
     }

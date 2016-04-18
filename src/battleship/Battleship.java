@@ -8,7 +8,7 @@ public class Battleship {
 
     
     public static void main(String[] args) {
-        Board b = new Board(10);
+        Board b = new Board(10, true);
         Ship s = new Ship(4, true);
         b.placeShip(50,40,43,50);
         

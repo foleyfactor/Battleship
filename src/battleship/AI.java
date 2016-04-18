@@ -18,8 +18,7 @@ public class AI extends Player {
     public AI(Board b, Ship[] s, Player o) {
         super(b, s);
         this.random = new Random();
-        //TODO: change to board.getSize() when board class isn't being worked on.
-        this.potentials = new int[b.ships.length][b.ships.length];
+        this.potentials = new int[b.getBoardSize()][b.getBoardSize()];
         this.setOpponent(o);
         this.lastNumHits = 0;
         this.neighbours = new ArrayList();
@@ -31,9 +30,9 @@ public class AI extends Player {
         //been guessed.
         do {
             //Change these to board.getSize()
-            x = this.random.nextInt(this.potentials.length);
-            y = this.random.nextInt(this.potentials.length);
-        } while (this.getOpponent().getBoard().guesses[x][y]);
+            x = this.random.nextInt(this.getBoard().getBoardSize());
+            y = this.random.nextInt(this.getBoard().getBoardSize());
+        } while (this.getOpponent().getBoard().isGuessed(x, y));
         //this.getOpponent().getBoard().guesses[x][y] = true;
 
         return new int[] {x,y};
@@ -44,38 +43,40 @@ public class AI extends Player {
     public int[] randomGuessUntilHit() {
         boolean hitLast = this.getNumHits() > this.lastNumHits;
         //If this is the first guess or we missed last time, make a new list of neighbours
-        if (! hitLast && this.neighbours.size() == 0) {
+        if (! hitLast && this.neighbours.isEmpty()) {
             this.lastGuess = alwaysRandomGuess();
-        //If we hit something last time, go through the list of neighbours and guess
-        } else if (hitLast) {
-            for (int i=-1; i<=1; i++) {
-                for (int j=-1; j<=1; j++) {
-                    //We only want to check lattice neighbours, not diagonals.
-                    if (Math.abs(i-j) % 2 == 0) {
-                        continue;
+        //If we hit something last time, add all of the neighbours to the possibilities
+        //Guess one of the neighbours
+        } else {
+            if (hitLast) {
+                for (int i=-1; i<=1; i++) {
+                    for (int j=-1; j<=1; j++) {
+                        //We only want to check lattice neighbours, not diagonals.
+                        if (Math.abs(i-j) % 2 == 0) {
+                            continue;
+                        }
+                        if (this.lastGuess[0]+i < 0 || this.lastGuess[0]+i >= this.getBoard().getBoardSize()) {
+                            continue;
+                        }
+                        if (this.lastGuess[1]+j < 0 || this.lastGuess[1]+j >= this.getBoard().getBoardSize()) {
+                            continue;
+                        }
+                        this.neighbours.add(new int[] {this.lastGuess[0]+i, this.lastGuess[1]+j});
                     }
-                    if (this.lastGuess[0]+i < 0 || this.lastGuess[0]+i >= this.potentials.length) {
-                        continue;
-                    }
-                    if (this.lastGuess[1]+j < 0 || this.lastGuess[1]+j >= this.potentials.length) {
-                        continue;
-                    }
-                    this.neighbours.add(new int[] {this.lastGuess[0]+i, this.lastGuess[1]+j});
                 }
             }
             int guessIndex = this.random.nextInt(this.neighbours.size());
             this.lastGuess = this.neighbours.get(guessIndex);
             this.neighbours.remove(lastGuess);
-        } else {
-            int guessIndex = this.random.nextInt(this.neighbours.size());
-            lastGuess = this.neighbours.get(guessIndex);
-            this.neighbours.remove(lastGuess);
+            
         }
+        this.lastNumHits = this.getNumHits();
+        return this.lastGuess;
     }
     
     public static void main(String[] args) {
-        Board b1 = new Board(4);
-        Board b2 = new Board(4);
+        Board b1 = new Board(4, true);
+        Board b2 = new Board(4, true);
         Ship[] s1 = new Ship[1];
         Ship[] s2 = new Ship[1];
         Player p1 = new Player(b1, s1);
