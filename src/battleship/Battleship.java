@@ -13,14 +13,15 @@ public class Battleship {
         Board b = new Board(10, 100, true);
         Ship s = new Ship(4, true);
         Ship s1 = new Ship(5, false);
-        b.placeShip(1,1,s);
+        b.placeShip(s, 1,1);
         if (b.canBePlaced(s1, 1, 1)) {
-            b.placeShip(1, 1, s1);
+            b.placeShip(s1, 1, 1);
         }
         
         JFrame f = new JFrame();
         f.setSize(400, 400);
         f.getContentPane().add(b);
+        b.addMouseListener(b);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setVisible(true);
         

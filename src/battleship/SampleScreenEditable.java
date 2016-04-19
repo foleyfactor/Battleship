@@ -31,6 +31,7 @@ public class SampleScreen extends javax.swing.JFrame {
         jPanel1.addMouseListener(jPanel1);
         jPanel2 = new Board(10, 280, false);
         jPanel2.addMouseListener(jPanel2);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
 

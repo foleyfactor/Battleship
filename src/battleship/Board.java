@@ -7,9 +7,13 @@ package battleship;
 
 import java.io.*;
 import java.awt.*; //needed for graphics
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.*;
 
-public class Board extends JPanel {
+public class Board extends JPanel implements KeyListener, MouseListener{
     private Ship[][] ships;
     private boolean shipsVisible;
     private boolean[][] guesses;
@@ -51,7 +55,7 @@ public class Board extends JPanel {
         if (vertical) {
             for (int i=0; i<s.ySize; i++) {
                 try {
-                    if (this.ships[x+i][y] != null) {
+                    if (this.ships[y+i][x] != null) {
                         return false;
                     }
                 } catch (Exception e) {
@@ -62,7 +66,7 @@ public class Board extends JPanel {
         }
         for (int i=0; i<s.xSize; i++) {
             try {
-                if (this.ships[x][y+i] != null) {
+                if (this.ships[y][x+i] != null) {
                     return false;
                 }
             } catch (Exception e) {
@@ -83,14 +87,15 @@ public class Board extends JPanel {
      * is to loop through based on the ship's size and orientation and size and set 
      * this.ships[i][j] = the ship.
      */
-    public void placeShip(int x, int y, Ship s){
+    public void placeShip(Ship s, int x, int y){
         if (s.vertical) {
             for (int i=0; i<s.ySize; i++) {
-                this.ships[x+i][y] = s;
+                this.ships[y+i][x] = s;
             }
         } else {
             for (int i=0; i<s.xSize; i++) {
-                this.ships[x][y+i] = s;
+                this.ships[y][x+i] = s;
+                System.out.println((y+i));
             }
         }
     }
@@ -170,6 +175,51 @@ public class Board extends JPanel {
         return this.guesses[x][y];
     }
     
+    public int[] getCoords(int x, int y) {
+        boolean xLine = (x%this.squareSize) == 0;
+        boolean yLine = (y%this.squareSize) == 0;
+        
+        //Set the current index of the squares to 0
+        int squareIndexX = 0;
+        int squareIndexY = 0;
+        
+        if (xLine) squareIndexX = Integer.MAX_VALUE;
+        if (yLine) squareIndexY = Integer.MAX_VALUE;
+        
+        //While the x-coordinate is greater than 0
+        while (x > 0 && !xLine) {
+            //Subtract the width of the cell
+            x -= this.squareSize;
+            
+            //If x is less than 0, then break from the loop; done with the x
+            //component
+            if (x < 0) {
+                break;
+            }
+            
+            //Increment the x index
+            squareIndexX++;
+        }
+        
+        //While the y-coordinate is greater than 0
+        while (y > 0 && !yLine) {
+            //Subtract the width of the cell
+            y -= this.squareSize;
+            
+            //If y is less than 0, then break from the loop; done with the y
+            //component
+            if (y < 0) {
+                break;
+            }
+            
+            //Increment the y index
+            squareIndexY++;
+        }
+        
+        //Return the two as an array
+        return new int[] {squareIndexX, this.getBoardSize()-1-squareIndexY};
+    }
+    
     //Returns the size of the playing board
     public int getBoardSize() {
         return this.ships.length;
@@ -177,5 +227,55 @@ public class Board extends JPanel {
     
     public Ship[][] getShips() {
         return this.ships;
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (! (e.getX() > this.size || e.getX() < 0)) {
+            if (! (e.getY() > this.size || e.getY() < 0)) {
+                int[] d = this.getCoords(e.getX(), e.getY());
+                System.out.println(d[0]+ " "+ d[1]);
+                Ship s = new Ship(4, false);
+                if (this.canBePlaced(s, d[0], d[1])) {
+                    this.placeShip(s, d[0], d[1]);
+                    this.repaint();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
