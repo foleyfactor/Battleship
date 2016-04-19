@@ -225,6 +225,10 @@ public class Board extends JPanel implements KeyListener, MouseListener{
         return this.ships.length;
     }
     
+    public int getSquareSize() {
+        return this.squareSize;
+    }
+    
     public Ship[][] getShips() {
         return this.ships;
     }
