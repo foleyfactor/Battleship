@@ -9,21 +9,19 @@ import java.io.*;
 import java.awt.*; //needed for graphics
 import javax.swing.*;
 
-public class Board extends JFrame {
+public class Board extends JPanel {
     private Ship[][] ships;
     private boolean shipsVisible;
     private boolean[][] guesses;
     private boolean isFinished;
     
-    private int height = 400;   //I think these are going to need to be constructor fields 
-    private int width = 400;    //in the future - we may need to display more than one board on the screen
-    
-    private int xStartPos = 20;//Sets where the board begins drawing
-    private int yStartPos = 50;//Sets where the board begins drawing
+    private int size;    //in the future - we may need to display more than one board on the screen
+    private int squareSize;
+  
+//    private int xStartPos = 20;//Sets where the board begins drawing
+//    private int yStartPos = 50;//Sets where the board begins drawing
 //    private int numSquaresX = 10;  These two can be replaced with this.getBoardSize();
 //    private int numSquaresY = 10;
-    private int squareWidth = 40;
-    private int squareHeight = 40;
     
     /* James, sorry to mess with your code, but here was what I was planning on
      * doing to keep track of the ships:
@@ -39,11 +37,13 @@ public class Board extends JFrame {
      */
     
     
-    public Board(int s, boolean v) {
+    public Board(int s, int size, boolean v) {
         this.ships = new Ship[s][s];
         this.guesses = new boolean[s][s];
         this.isFinished = false;
         this.shipsVisible = v;
+        this.size = size;
+        this.squareSize = size/s;
     }
     
     public boolean canBePlaced(Ship s, int x, int y) {
@@ -51,7 +51,7 @@ public class Board extends JFrame {
         if (vertical) {
             for (int i=0; i<s.ySize; i++) {
                 try {
-                    if (this.ships[x][y-i] != null) {
+                    if (this.ships[x+i][y] != null) {
                         return false;
                     }
                 } catch (Exception e) {
@@ -62,7 +62,7 @@ public class Board extends JFrame {
         }
         for (int i=0; i<s.xSize; i++) {
             try {
-                if (this.ships[x-i][y] != null) {
+                if (this.ships[x][y+i] != null) {
                     return false;
                 }
             } catch (Exception e) {
@@ -83,12 +83,14 @@ public class Board extends JFrame {
      * is to loop through based on the ship's size and orientation and size and set 
      * this.ships[i][j] = the ship.
      */
-    public void placeShip(int startX, int startY, int numColumns, int numRows){
-        int endCol = Math.min(startX+numColumns, numSquaresX);
-        int endRow = Math.min(startY+numRows, numSquaresY);
-        for (int i = startX; i<endCol; i++){
-            for (int j = startY; j<endRow; j++){
-                isShip[i][j] = true;
+    public void placeShip(int x, int y, Ship s){
+        if (s.vertical) {
+            for (int i=0; i<s.ySize; i++) {
+                this.ships[x+i][y] = s;
+            }
+        } else {
+            for (int i=0; i<s.xSize; i++) {
+                this.ships[x][y+i] = s;
             }
         }
     }
@@ -96,39 +98,60 @@ public class Board extends JFrame {
     //Because the player is going to need to be able to see their ships, but not
     //the opponent's board, we should add an if statement for whether or not
     //the ships are visible (this.shipsVisible)
-    public void paint(Graphics g){
-        int x1, y1, x2, y2, i, j;
-        x1 = xStartPos;
-        x2 = squareWidth;
-        for (i=0; i<numSquaresX; i++){
-            y1 = xStartPos;
-            y2 = squareHeight;
-            
-            for (j=0; j<numSquaresY; j++){
-                if (this.isShip(i, j)){
+//    public void paint(Graphics g){
+//        int x1, y1, x2, y2, i, j;
+//        x1 = xStartPos;
+//        x2 = squareWidth;
+//        for (i=0; i<numSquaresX; i++){
+//            y1 = xStartPos;
+//            y2 = squareHeight;
+//            
+//            for (j=0; j<numSquaresY; j++){
+//                if (this.isShip(i, j)){
+//                    g.setColor(Color.GRAY);
+//                    
+//                }
+//                else{
+//                    g.setColor(Color.BLUE);
+//                }
+//                g.fillRect(x1, y1, x2, y2);
+//                g.setColor(Color.WHITE);
+//                g.drawRect(x1, y1, x2, y2);
+//                y1 = y1 + squareHeight;
+//                y2 = y2 + squareHeight;
+//            }
+//            x1 = x1 + squareWidth;
+//            x2 = x2 + squareWidth;
+//        }
+//    }
+    
+    @Override
+    public void paintComponent(Graphics g) {
+        int x=0, y=0;
+        for (int i=this.getBoardSize()-1; i>=0; i--) {
+            for (int j=0; j<this.getBoardSize(); j++) {
+                if (this.isShip(i, j)) {
                     g.setColor(Color.GRAY);
-                    
+                } else {
+                    g.setColor(Color.WHITE);
                 }
-                else{
-                    g.setColor(Color.BLUE);
-                }
-                g.fillRect(x1, y1, x2, y2);
-                g.setColor(Color.WHITE);
-                g.drawRect(x1, y1, x2, y2);
-                y1 = y1 + squareHeight;
-                y2 = y2 + squareHeight;
+                g.fillRect(x, y, this.squareSize, this.squareSize);
+                g.setColor(Color.BLACK);
+                g.drawRect(x, y, this.squareSize, this.squareSize);
+                
+                x += this.squareSize;
             }
-            x1 = x1 + squareWidth;
-            x2 = x2 + squareWidth;
+            x = 0;
+            y += this.squareSize;
         }
     }
     
-    //Sets up the board for the first time
-    public void initializeBoard() throws IOException{
-        setSize(height,width);
-        
-        
-    }
+//    //Sets up the board for the first time
+//    public void initializeBoard() throws IOException{
+//        setSize(height,width);
+//        
+//        
+//    }
     
     public boolean isShip(int x, int y) {
         return this.ships[x][y] != null;

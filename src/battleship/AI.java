@@ -33,7 +33,6 @@ public class AI extends Player {
             x = this.random.nextInt(this.getBoard().getBoardSize());
             y = this.random.nextInt(this.getBoard().getBoardSize());
         } while (this.getOpponent().getBoard().isGuessed(x, y));
-        //this.getOpponent().getBoard().guesses[x][y] = true;
 
         return new int[] {x,y};
     }
@@ -61,7 +60,10 @@ public class AI extends Player {
                         if (this.lastGuess[1]+j < 0 || this.lastGuess[1]+j >= this.getBoard().getBoardSize()) {
                             continue;
                         }
-                        this.neighbours.add(new int[] {this.lastGuess[0]+i, this.lastGuess[1]+j});
+                        if (! this.containsPair(this.neighbours, this.lastGuess[0]+i, this.lastGuess[1]+j) && !this.getOpponent().getBoard().isGuessed(this.lastGuess[0]+i, this.lastGuess[1]+j)) {
+                            System.out.println((this.lastGuess[0]+i) + " " + (this.lastGuess[1]+j));
+                            this.neighbours.add(new int[] {this.lastGuess[0]+i, this.lastGuess[1]+j});
+                        }
                     }
                 }
             }
@@ -71,7 +73,17 @@ public class AI extends Player {
             
         }
         this.lastNumHits = this.getNumHits();
+        this.fire(this.lastGuess[0], this.lastGuess[1]);
         return this.lastGuess;
+    }
+    
+    public boolean containsPair(ArrayList<int[]> a, int x, int y) {
+        for (int[] i : a) {
+            if (i[0] == x && i[1] == y) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public static void main(String[] args) {

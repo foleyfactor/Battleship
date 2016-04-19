@@ -4,14 +4,35 @@
  */
 package battleship;
 
+import javax.swing.JFrame;
+
 public class Battleship {
 
     
     public static void main(String[] args) {
-        Board b = new Board(10, true);
+        Board b = new Board(10, 100, true);
         Ship s = new Ship(4, true);
-        b.placeShip(50,40,43,50);
+        Ship s1 = new Ship(5, false);
+        b.placeShip(1,1,s);
+        if (b.canBePlaced(s1, 1, 1)) {
+            b.placeShip(1, 1, s1);
+        }
         
-        System.out.println(b.canBePlaced(s, 7, 7));
+        JFrame f = new JFrame();
+        f.setSize(400, 400);
+        f.getContentPane().add(b);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setVisible(true);
+        
+//        //Board b1 = new Board(4, true);
+//        Board b2 = new Board(10, 100, true);
+//        //Ship[] s1 = new Ship[1];
+//        Ship[] s2 = new Ship[1];
+//        Player p1 = new Player(b, new Ship[]{s});
+//        AI p2 = new AI(b2, s2, p1);
+//        for (int i=0; i<15; i++) {
+//            int[] coord = p2.randomGuessUntilHit();
+//            System.out.println("My guess is: " + coord[0] + ", " + coord[1]);
+//        }
     }
 }
