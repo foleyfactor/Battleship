@@ -15,14 +15,14 @@ import javax.swing.JPanel;
  *
  * @author Alex
  */
-public class SampleScreen extends javax.swing.JFrame implements MouseMotionListener {
+public class SampleScreenEditable extends javax.swing.JFrame implements MouseMotionListener {
     
     boolean isPlacing;
     Ship currShip;
     int squareSize;
     
     /** Creates new form SampleScreen */
-    public SampleScreen() {
+    public SampleScreenEditable() {
         initComponents();
         this.isPlacing = true;
         this.currShip = new Ship(4, true);
