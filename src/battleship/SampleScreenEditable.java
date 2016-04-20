@@ -5,17 +5,47 @@
 
 package battleship;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 
 /**
  *
  * @author Alex
  */
-public class SampleScreen extends javax.swing.JFrame {
-
+public class SampleScreen extends javax.swing.JFrame implements MouseMotionListener {
+    
+    boolean isPlacing;
+    Ship currShip;
+    int squareSize;
+    
     /** Creates new form SampleScreen */
     public SampleScreen() {
         initComponents();
+        this.isPlacing = true;
+        this.currShip = new Ship(4, true);
+        this.squareSize = this.jPanel1.getSquareSize();   
+    }
+    
+    public void paint(Graphics g, int x, int y) {
+        super.paint(g);
+        x -= this.squareSize/2;
+        y -= this.squareSize/2;
+        int currSize = Math.max(this.currShip.ySize, this.currShip.xSize);
+        
+        for (int i=0; i<currSize; i++) {
+            g.setColor(Color.GRAY);
+            g.fillRect(x, y, this.squareSize, this.squareSize);
+            g.setColor(Color.BLACK);
+            g.drawRect(x, y, this.squareSize, this.squareSize);
+            if (this.currShip.vertical) {
+                y -= this.squareSize;
+            } else {
+                x += this.squareSize;
+            }
+        }
     }
 
     /** This method is called from within the constructor to
@@ -29,8 +59,10 @@ public class SampleScreen extends javax.swing.JFrame {
 
         jPanel1 = new Board(10, 450, true);
         jPanel1.addMouseListener(jPanel1);
+        jPanel1.addMouseMotionListener(jPanel1);
         jPanel2 = new Board(10, 280, false);
         jPanel2.addMouseListener(jPanel2);
+        jPanel2.addMouseMotionListener(jPanel2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
@@ -114,6 +146,7 @@ public class SampleScreen extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 SampleScreen s = new SampleScreen();
+                s.addMouseMotionListener(s);
 //                Board b = new Board(10, 100, true);
 //                s.getContentPane().add(b);
 //                b.setBounds(150, 150, 101, 101);
@@ -127,5 +160,15 @@ public class SampleScreen extends javax.swing.JFrame {
     private Board jPanel1;
     private Board jPanel2;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        this.paint(this.getGraphics(), e.getX(), e.getY());
+    }
 
 }

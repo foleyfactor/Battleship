@@ -21,6 +21,7 @@ public class SampleScreen extends javax.swing.JFrame implements MouseMotionListe
     Ship currShip;
     int squareSize;
     
+    
     /** Creates new form SampleScreen */
     public SampleScreen() {
         initComponents();
@@ -59,8 +60,11 @@ public class SampleScreen extends javax.swing.JFrame implements MouseMotionListe
 
         jPanel1 = new Board(10, 450, true);
         jPanel1.addMouseListener(jPanel1);
+        jPanel1.addMouseMotionListener(jPanel1);
         jPanel2 = new Board(10, 280, false);
         jPanel2.addMouseListener(jPanel2);
+        jPanel2.addMouseMotionListener(jPanel2);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
 
@@ -143,7 +147,6 @@ public class SampleScreen extends javax.swing.JFrame implements MouseMotionListe
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 SampleScreen s = new SampleScreen();
-                s.addMouseMotionListener(s);
 //                Board b = new Board(10, 100, true);
 //                s.getContentPane().add(b);
 //                b.setBounds(150, 150, 101, 101);

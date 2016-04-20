@@ -11,13 +11,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.util.Random;
 import javax.swing.*;
 
-public class Board extends JPanel implements KeyListener, MouseListener{
+public class Board extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
     private Ship[][] ships;
-    private boolean shipsVisible;
+    private boolean shipsVisible, isFinished, isBeingPlaced, mouseInPanel;
+    private Ship currShip;
     private boolean[][] guesses;
-    private boolean isFinished;
+    
+    private static Random testRandom = new Random();
     
     private int size;    //in the future - we may need to display more than one board on the screen
     private int squareSize;
@@ -48,6 +53,9 @@ public class Board extends JPanel implements KeyListener, MouseListener{
         this.shipsVisible = v;
         this.size = size;
         this.squareSize = size/s;
+        this.isBeingPlaced = v;
+        this.mouseInPanel = false;
+        this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
     }
     
     public boolean canBePlaced(Ship s, int x, int y) {
@@ -132,22 +140,73 @@ public class Board extends JPanel implements KeyListener, MouseListener{
     
     @Override
     public void paintComponent(Graphics g) {
-        int x=0, y=0;
+        BufferedImage img = new BufferedImage(this.size+1, this.size+1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gr = (Graphics2D) img.getGraphics();
+        
+        int xP=0, yP=0;
         for (int i=this.getBoardSize()-1; i>=0; i--) {
             for (int j=0; j<this.getBoardSize(); j++) {
                 if (this.isShip(i, j)) {
-                    g.setColor(Color.GRAY);
+                    gr.setColor(Color.GRAY);
                 } else {
-                    g.setColor(Color.WHITE);
+                    gr.setColor(Color.WHITE);
                 }
-                g.fillRect(x, y, this.squareSize, this.squareSize);
-                g.setColor(Color.BLACK);
-                g.drawRect(x, y, this.squareSize, this.squareSize);
+                gr.fillRect(xP, yP, this.squareSize, this.squareSize);
+                gr.setColor(Color.BLACK);
+                gr.drawRect(xP, yP, this.squareSize, this.squareSize);
                 
+                xP += this.squareSize;
+            }
+            xP = 0;
+            yP += this.squareSize;
+        }
+        
+        g.drawImage(img, 0, 0, null);
+    }
+    
+    public void paintComponent(Graphics g, int x, int y, Ship s) {
+        BufferedImage img = new BufferedImage(this.size+1, this.size+1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gr = (Graphics2D) img.getGraphics();
+        
+        int xP=0, yP=0;
+        for (int i=this.getBoardSize()-1; i>=0; i--) {
+            for (int j=0; j<this.getBoardSize(); j++) {
+                if (this.isShip(i, j)) {
+                    gr.setColor(Color.GRAY);
+                } else {
+                    gr.setColor(Color.WHITE);
+                }
+                gr.fillRect(xP, yP, this.squareSize, this.squareSize);
+                gr.setColor(Color.BLACK);
+                gr.drawRect(xP, yP, this.squareSize, this.squareSize);
+                
+                xP += this.squareSize;
+            }
+            xP = 0;
+            yP += this.squareSize;
+        }
+        
+        x -= this.squareSize/2;
+        y -= this.squareSize/2;
+        int currSize = Math.max(this.currShip.ySize, this.currShip.xSize);
+        
+        for (int i=0; i<currSize; i++) {
+            gr.setColor(Color.GRAY);
+            gr.fillRect(x, y, this.squareSize, this.squareSize);
+            gr.setColor(Color.BLACK);
+            gr.drawRect(x, y, this.squareSize, this.squareSize);
+            if (this.currShip.vertical) {
+                y -= this.squareSize;
+            } else {
                 x += this.squareSize;
             }
-            x = 0;
-            y += this.squareSize;
+        }
+        
+        g.drawImage(img, 0, 0, null);
+        try {
+            Thread.sleep(40);
+        } catch (Exception e) {
+            
         }
     }
     
@@ -253,10 +312,9 @@ public class Board extends JPanel implements KeyListener, MouseListener{
         if (! (e.getX() > this.size || e.getX() < 0)) {
             if (! (e.getY() > this.size || e.getY() < 0)) {
                 int[] d = this.getCoords(e.getX(), e.getY());
-                System.out.println(d[0]+ " "+ d[1]);
-                Ship s = new Ship(4, false);
-                if (this.canBePlaced(s, d[0], d[1])) {
-                    this.placeShip(s, d[0], d[1]);
+                if (this.canBePlaced(this.currShip, d[0], d[1])) {
+                    this.placeShip(this.currShip, d[0], d[1]);
+                    this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
                     this.repaint();
                 }
             }
@@ -275,11 +333,24 @@ public class Board extends JPanel implements KeyListener, MouseListener{
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.mouseInPanel = true;
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        this.mouseInPanel = false;
+        this.paintComponent(this.getGraphics(), Integer.MAX_VALUE, Integer.MAX_VALUE, this.currShip);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        if (this.mouseInPanel) {
+            this.paintComponent(this.getGraphics(), e.getX(), e.getY(), this.currShip);
+        }
     }
 }
