@@ -1,5 +1,5 @@
 /*
- * Written by Islam Elmallah, Alex Foley, James Milne for the 
+ * Written by  Alex Foley & James Milne for the 
  * ICS4UI Software Design Project
  */
 package battleship;
