@@ -14,14 +14,19 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.Arrays;
 import javax.swing.*;
 
 public class Board extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
     private Ship[][] ships;
+    private Ship[] toBePlaced;
     private boolean shipsVisible, isFinished, isBeingPlaced, mouseInPanel;
     private Ship currShip;
     private boolean[][] guesses;
     
+    //Want to test how my AI does :)
+    private Board oBoard;
+    private AI testAI;
     private static Random testRandom = new Random();
     
     private int size;    //in the future - we may need to display more than one board on the screen
@@ -55,7 +60,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         this.squareSize = size/s;
         this.isBeingPlaced = v;
         this.mouseInPanel = false;
-        this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
+        //this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
     }
     
     public boolean canBePlaced(Ship s, int x, int y) {
@@ -96,6 +101,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
      * this.ships[i][j] = the ship.
      */
     public void placeShip(Ship s, int x, int y){
+        s.place();
         if (s.vertical) {
             for (int i=0; i<s.ySize; i++) {
                 this.ships[y+i][x] = s;
@@ -106,8 +112,30 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 System.out.println((y+i));
             }
         }
+        if (this.allShipsPlaced()) {
+            this.isBeingPlaced = false;
+            this.testAI();
+        } else {
+            this.currShip = this.getNextShip(s);
+        }
     }
     
+    public void setAI(AI a) {
+        this.testAI = a;
+    }
+    
+    public void setOBoard(Board o) {
+        this.oBoard = o;
+        o.oBoard = this;
+    }
+    
+    public void testAI() {
+        for (int i=0; i<30; i++) {
+            int[] guess = this.testAI.randomGuessUntilHit();
+            if (this.oBoard.guess(guess[0], guess[1])) this.testAI.hit();
+            this.oBoard.repaint();
+        }
+    }    
     //Because the player is going to need to be able to see their ships, but not
     //the opponent's board, we should add an if statement for whether or not
     //the ships are visible (this.shipsVisible)
@@ -142,71 +170,95 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public void paintComponent(Graphics g) {
         BufferedImage img = new BufferedImage(this.size+1, this.size+1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gr = (Graphics2D) img.getGraphics();
-        
-        int xP=0, yP=0;
-        for (int i=this.getBoardSize()-1; i>=0; i--) {
-            for (int j=0; j<this.getBoardSize(); j++) {
-                if (this.isShip(i, j)) {
-                    gr.setColor(Color.GRAY);
-                } else {
-                    gr.setColor(Color.WHITE);
+        if (this.shipsVisible) {
+            int xP=0, yP=0;
+            for (int i=this.getBoardSize()-1; i>=0; i--) {
+                for (int j=0; j<this.getBoardSize(); j++) {
+                    if (this.isShip(i, j)) {
+                        gr.setColor(Color.GRAY);
+                    } else {
+                        gr.setColor(Color.WHITE);
+                    }
+                    gr.fillRect(xP, yP, this.squareSize, this.squareSize);
+                    gr.setColor(Color.BLACK);
+                    gr.drawRect(xP, yP, this.squareSize, this.squareSize);
+
+                    xP += this.squareSize;
                 }
-                gr.fillRect(xP, yP, this.squareSize, this.squareSize);
-                gr.setColor(Color.BLACK);
-                gr.drawRect(xP, yP, this.squareSize, this.squareSize);
-                
-                xP += this.squareSize;
+                xP = 0;
+                yP += this.squareSize;
             }
-            xP = 0;
-            yP += this.squareSize;
+        } else {
+            int xP=0, yP=0;
+            for (int i=this.getBoardSize()-1; i>=0; i--) {
+                for (int j=0; j<this.getBoardSize(); j++) {
+                    if (this.isGuessed(i, j) && !this.oBoard.isShip(i, j)) {
+                        gr.setColor(Color.LIGHT_GRAY);
+                    } else if (this.isGuessed(i, j)) {
+                        gr.setColor(Color.RED);
+                    } else {
+                        gr.setColor(Color.WHITE);
+                    }
+                    gr.fillRect(xP, yP, this.squareSize, this.squareSize);
+                    gr.setColor(Color.BLACK);
+                    gr.drawRect(xP, yP, this.squareSize, this.squareSize);
+
+                    xP += this.squareSize;
+                }
+                xP = 0;
+                yP += this.squareSize;
+            }
         }
-        
         g.drawImage(img, 0, 0, null);
     }
     
     public void paintComponent(Graphics g, int x, int y, Ship s) {
-        BufferedImage img = new BufferedImage(this.size+1, this.size+1, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gr = (Graphics2D) img.getGraphics();
-        
-        int xP=0, yP=0;
-        for (int i=this.getBoardSize()-1; i>=0; i--) {
-            for (int j=0; j<this.getBoardSize(); j++) {
-                if (this.isShip(i, j)) {
-                    gr.setColor(Color.GRAY);
-                } else {
-                    gr.setColor(Color.WHITE);
+        if (this.shipsVisible) {
+            BufferedImage img = new BufferedImage(this.size+1, this.size+1, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D gr = (Graphics2D) img.getGraphics();
+
+            int xP=0, yP=0;
+            for (int i=this.getBoardSize()-1; i>=0; i--) {
+                for (int j=0; j<this.getBoardSize(); j++) {
+                    if (this.isShip(i, j)) {
+                        gr.setColor(Color.GRAY);
+                    } else {
+                        gr.setColor(Color.WHITE);
+                    }
+                    gr.fillRect(xP, yP, this.squareSize, this.squareSize);
+                    gr.setColor(Color.BLACK);
+                    gr.drawRect(xP, yP, this.squareSize, this.squareSize);
+
+                    xP += this.squareSize;
                 }
-                gr.fillRect(xP, yP, this.squareSize, this.squareSize);
-                gr.setColor(Color.BLACK);
-                gr.drawRect(xP, yP, this.squareSize, this.squareSize);
-                
-                xP += this.squareSize;
+                xP = 0;
+                yP += this.squareSize;
             }
-            xP = 0;
-            yP += this.squareSize;
-        }
-        
-        x -= this.squareSize/2;
-        y -= this.squareSize/2;
-        int currSize = Math.max(this.currShip.ySize, this.currShip.xSize);
-        
-        for (int i=0; i<currSize; i++) {
-            gr.setColor(Color.GRAY);
-            gr.fillRect(x, y, this.squareSize, this.squareSize);
-            gr.setColor(Color.BLACK);
-            gr.drawRect(x, y, this.squareSize, this.squareSize);
-            if (this.currShip.vertical) {
-                y -= this.squareSize;
-            } else {
-                x += this.squareSize;
+
+            if (this.isBeingPlaced) {
+                x -= this.squareSize/2;
+                y -= this.squareSize/2;
+                int currSize = Math.max(this.currShip.ySize, this.currShip.xSize);
+
+                for (int i=0; i<currSize; i++) {
+                    gr.setColor(Color.GRAY);
+                    gr.fillRect(x, y, this.squareSize, this.squareSize);
+                    gr.setColor(Color.BLACK);
+                    gr.drawRect(x, y, this.squareSize, this.squareSize);
+                    if (this.currShip.vertical) {
+                        y -= this.squareSize;
+                    } else {
+                        x += this.squareSize;
+                    }
+                }
             }
-        }
-        
-        g.drawImage(img, 0, 0, null);
-        try {
-            Thread.sleep(40);
-        } catch (Exception e) {
-            
+
+            g.drawImage(img, 0, 0, null);
+            try {
+                Thread.sleep(40);
+            } catch (Exception e) {
+
+            }
         }
     }
     
@@ -222,9 +274,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     }
     
     public boolean guess(int x, int y) {
-        this.guesses[x][y] = true;
-        if (this.ships[x][y] != null) {
-            this.ships[x][y].hit();
+        this.oBoard.guesses[x][y] = true;
+        if (this.oBoard.ships[x][y] != null) {
+            this.oBoard.ships[x][y].hit();
             return true;
         }
         return false;
@@ -291,6 +343,30 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public Ship[][] getShips() {
         return this.ships;
     }
+    
+    public void setShipsToBePlaced(Ship[] s) {
+        this.toBePlaced = s;
+        this.currShip = this.getNextShip(this.toBePlaced[0]);
+        System.out.println("initialized it.");
+        System.out.println(this.currShip.xSize + " " + this.currShip.vertical);
+    }
+    
+    public Ship getNextShip(Ship s) {
+        int index = (Arrays.asList(this.toBePlaced).indexOf(s)+1)%this.toBePlaced.length;
+        while (this.toBePlaced[index].isPlaced()) {
+            index = (index+1)%this.toBePlaced.length;
+        }
+        return this.toBePlaced[index];
+    }
+    
+    public boolean allShipsPlaced() {
+        for (Ship s : this.toBePlaced) {
+            if (! s.isPlaced) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -314,7 +390,6 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 int[] d = this.getCoords(e.getX(), e.getY());
                 if (this.canBePlaced(this.currShip, d[0], d[1])) {
                     this.placeShip(this.currShip, d[0], d[1]);
-                    this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
                     this.repaint();
                 }
             }

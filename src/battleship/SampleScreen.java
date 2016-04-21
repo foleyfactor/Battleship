@@ -147,13 +147,18 @@ public class SampleScreen extends javax.swing.JFrame implements MouseMotionListe
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 SampleScreen s = new SampleScreen();
-//                Board b = new Board(10, 100, true);
-//                s.getContentPane().add(b);
-//                b.setBounds(150, 150, 101, 101);
-//                b.setVisible(true);
+                s.jPanel1.setShipsToBePlaced(new Ship[] {new Ship(2, true), new Ship(3, false), new Ship(4, false), new Ship(5, true)});
                 s.setVisible(true);
             }
         });
+    }
+    
+    public Board getPanel1() {
+        return this.jPanel1;
+    }
+    
+    public Board getPanel2() {
+        return this.jPanel2;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

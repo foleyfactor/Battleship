@@ -10,21 +10,28 @@ public class Battleship {
 
     
     public static void main(String[] args) {
-        Board b = new Board(10, 100, true);
-        Ship s = new Ship(4, true);
-        Ship s1 = new Ship(5, false);
-        b.placeShip(s, 1,1);
-        if (b.canBePlaced(s1, 1, 1)) {
-            b.placeShip(s1, 1, 1);
-        }
+//        Board b = new Board(10, 100, true);
+//        Ship s = new Ship(4, true);
+//        Ship s1 = new Ship(5, false);
+//        b.placeShip(s, 1,1);
+//        if (b.canBePlaced(s1, 1, 1)) {
+//            b.placeShip(s1, 1, 1);
+//        }
+//        
+//        JFrame f = new JFrame();
+//        f.setSize(400, 400);
+//        f.getContentPane().add(b);
+//        b.addMouseListener(b);
+//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        f.setVisible(true);
         
-        JFrame f = new JFrame();
-        f.setSize(400, 400);
-        f.getContentPane().add(b);
-        b.addMouseListener(b);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.setVisible(true);
-        
+        SampleScreen s = new SampleScreen();
+        s.getPanel1().setShipsToBePlaced(new Ship[] {new Ship(2, true), new Ship(3, false), new Ship(4, false), new Ship(5, true)});
+        s.getPanel2().setShipsToBePlaced(new Ship[] {new Ship(2, true), new Ship(3, false), new Ship(4, false), new Ship(5, true)});
+        s.getPanel1().setAI(new AI(s.getPanel1(), new Ship[]{}, new Player(new Board(3, 3, true), new Ship[]{})));
+        s.getPanel1().setOBoard(s.getPanel2());
+        s.setVisible(true);
+                
 //        //Board b1 = new Board(4, true);
 //        Board b2 = new Board(10, 100, true);
 //        //Ship[] s1 = new Ship[1];

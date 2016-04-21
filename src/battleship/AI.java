@@ -32,7 +32,7 @@ public class AI extends Player {
             //Change these to board.getSize()
             x = this.random.nextInt(this.getBoard().getBoardSize());
             y = this.random.nextInt(this.getBoard().getBoardSize());
-        } while (this.getOpponent().getBoard().isGuessed(x, y));
+        } while (this.getBoard().isGuessed(x, y));
 
         return new int[] {x,y};
     }
@@ -60,7 +60,7 @@ public class AI extends Player {
                         if (this.lastGuess[1]+j < 0 || this.lastGuess[1]+j >= this.getBoard().getBoardSize()) {
                             continue;
                         }
-                        if (! this.containsPair(this.neighbours, this.lastGuess[0]+i, this.lastGuess[1]+j) && !this.getOpponent().getBoard().isGuessed(this.lastGuess[0]+i, this.lastGuess[1]+j)) {
+                        if (! this.containsPair(this.neighbours, this.lastGuess[0]+i, this.lastGuess[1]+j) && !this.getBoard().isGuessed(this.lastGuess[0]+i, this.lastGuess[1]+j)) {
                             System.out.println((this.lastGuess[0]+i) + " " + (this.lastGuess[1]+j));
                             this.neighbours.add(new int[] {this.lastGuess[0]+i, this.lastGuess[1]+j});
                         }
@@ -73,7 +73,8 @@ public class AI extends Player {
             
         }
         this.lastNumHits = this.getNumHits();
-        this.fire(this.lastGuess[0], this.lastGuess[1]);
+        this.getBoard().guess(this.lastGuess[0], this.lastGuess[1]);
+        
         return this.lastGuess;
     }
     
@@ -86,16 +87,17 @@ public class AI extends Player {
         return false;
     }
     
-    public static void main(String[] args) {
-        Board b1 = new Board(4, true);
-        Board b2 = new Board(4, true);
-        Ship[] s1 = new Ship[1];
-        Ship[] s2 = new Ship[1];
-        Player p1 = new Player(b1, s1);
-        AI p2 = new AI(b2, s2, p1);
-        for (int i=0; i<15; i++) {
-            int[] coord = p2.alwaysRandomGuess();
-            System.out.println("My guess is: " + coord[0] + ", " + coord[1]);
-        }
-    }
+    
+//    public static void main(String[] args) {
+//        Board b1 = new Board(4, true);
+//        Board b2 = new Board(4, true);
+//        Ship[] s1 = new Ship[1];
+//        Ship[] s2 = new Ship[1];
+//        Player p1 = new Player(b1, s1);
+//        AI p2 = new AI(b2, s2, p1);
+//        for (int i=0; i<15; i++) {
+//            int[] coord = p2.alwaysRandomGuess();
+//            System.out.println("My guess is: " + coord[0] + ", " + coord[1]);
+//        }
+//    }
 }

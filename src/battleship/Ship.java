@@ -7,7 +7,7 @@ package battleship;
 
 public class Ship {
     public int xSize, ySize;
-    public boolean vertical, isSunk;
+    public boolean vertical, isSunk, isPlaced;
     public int numHits;
     
     public Ship(int s, boolean v) {
@@ -20,6 +20,7 @@ public class Ship {
             this.ySize = 1;
         }
         this.isSunk = false;
+        this.isPlaced = false;
     }
     
     public void hit() {
@@ -29,5 +30,13 @@ public class Ship {
     
     public void sink() {
         this.isSunk = true;
+    }
+    
+    public void place() {
+        this.isPlaced = true;
+    }
+    
+    public boolean isPlaced() {
+        return this.isPlaced;
     }
 }

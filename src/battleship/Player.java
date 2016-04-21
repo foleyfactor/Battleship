@@ -49,4 +49,8 @@ public class Player {
     public int getNumHits() {
         return this.numHits;
     }
+    
+    public void hit() {
+        this.numHits++;
+    }
 }
