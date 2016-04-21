@@ -7,21 +7,22 @@ package battleship;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class AI extends Player {
+public class AI {
     
     private Random random;
     private int[][] potentials;
     private int[] lastGuess;
     private ArrayList<int[]> neighbours;
-    private int lastNumHits;
+    private int lastNumHits, numHits;
+    private Board board;
     
-    public AI(Board b, Ship[] s, Player o) {
-        super(b, s);
+    public AI(Board b) {
         this.random = new Random();
         this.potentials = new int[b.getBoardSize()][b.getBoardSize()];
-        this.setOpponent(o);
         this.lastNumHits = 0;
+        this.numHits = 0;
         this.neighbours = new ArrayList();
+        this.board = b;
     }
     
     public int[] alwaysRandomGuess() {
@@ -30,9 +31,9 @@ public class AI extends Player {
         //been guessed.
         do {
             //Change these to board.getSize()
-            x = this.random.nextInt(this.getBoard().getBoardSize());
-            y = this.random.nextInt(this.getBoard().getBoardSize());
-        } while (this.getBoard().isGuessed(x, y));
+            x = this.random.nextInt(this.board.getBoardSize());
+            y = this.random.nextInt(this.board.getBoardSize());
+        } while (this.board.isGuessed(x, y));
 
         return new int[] {x,y};
     }
@@ -40,7 +41,8 @@ public class AI extends Player {
     //Will guess randomly until it hits something, then continues to guess neighbours
     //while it keeps hitting things.
     public int[] randomGuessUntilHit() {
-        boolean hitLast = this.getNumHits() > this.lastNumHits;
+        boolean hitLast = this.numHits > this.lastNumHits;
+        System.out.println(hitLast);
         //If this is the first guess or we missed last time, make a new list of neighbours
         if (! hitLast && this.neighbours.isEmpty()) {
             this.lastGuess = alwaysRandomGuess();
@@ -54,13 +56,13 @@ public class AI extends Player {
                         if (Math.abs(i-j) % 2 == 0) {
                             continue;
                         }
-                        if (this.lastGuess[0]+i < 0 || this.lastGuess[0]+i >= this.getBoard().getBoardSize()) {
+                        if (this.lastGuess[0]+i < 0 || this.lastGuess[0]+i >= this.board.getBoardSize()) {
                             continue;
                         }
-                        if (this.lastGuess[1]+j < 0 || this.lastGuess[1]+j >= this.getBoard().getBoardSize()) {
+                        if (this.lastGuess[1]+j < 0 || this.lastGuess[1]+j >= this.board.getBoardSize()) {
                             continue;
                         }
-                        if (! this.containsPair(this.neighbours, this.lastGuess[0]+i, this.lastGuess[1]+j) && !this.getBoard().isGuessed(this.lastGuess[0]+i, this.lastGuess[1]+j)) {
+                        if (! this.containsPair(this.neighbours, this.lastGuess[0]+i, this.lastGuess[1]+j) && !this.board.isGuessed(this.lastGuess[0]+i, this.lastGuess[1]+j)) {
                             System.out.println((this.lastGuess[0]+i) + " " + (this.lastGuess[1]+j));
                             this.neighbours.add(new int[] {this.lastGuess[0]+i, this.lastGuess[1]+j});
                         }
@@ -72,8 +74,8 @@ public class AI extends Player {
             this.neighbours.remove(lastGuess);
             
         }
-        this.lastNumHits = this.getNumHits();
-        this.getBoard().guess(this.lastGuess[0], this.lastGuess[1]);
+        this.lastNumHits = this.numHits;
+        this.board.guess(this.lastGuess[0], this.lastGuess[1]);
         
         return this.lastGuess;
     }
@@ -85,6 +87,14 @@ public class AI extends Player {
             }
         }
         return false;
+    }
+    
+    public void hit() {
+        this.numHits++;
+    }
+    
+    public int getNumHit() {
+        return this.numHits;
     }
     
     
