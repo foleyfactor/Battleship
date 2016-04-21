@@ -63,6 +63,18 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         //this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
     }
     
+    public void copyBoard(Board o) {
+        this.ships = this.copy(o.ships);
+        this.guesses = o.guesses;
+        this.isFinished = o.isFinished;
+        this.shipsVisible = o.shipsVisible;
+        this.isBeingPlaced = o.isBeingPlaced;
+        this.mouseInPanel = o.mouseInPanel;
+        this.oBoard = o.oBoard;
+        this.testAI = o.testAI;
+        this.repaint();
+    }
+    
     public boolean canBePlaced(Ship s, int x, int y) {
         boolean vertical = s.vertical;
         if (vertical) {
@@ -114,6 +126,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         if (this.allShipsPlaced()) {
             this.isBeingPlaced = false;
+            this.swapBoards(this.oBoard);
+            AI test = new AI(this);
+            this.setAI(test);
             this.testAI();
         } else {
             this.currShip = this.getNextShip(s);
@@ -129,13 +144,54 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         o.oBoard = this;
     }
     
+    public Ship[][] copy(Ship[][] s) {
+        Ship[][] copy = new Ship[s.length][s[0].length];
+        for (int i=0; i<s.length; i++) {
+            for (int j=0; j<s[0].length; j++) {
+                copy[i][j] = s[i][j];
+            }
+        }
+        return copy;
+    }
+    
+    public boolean[][] copy(boolean[][] b) {
+        boolean[][] copy = new boolean[b.length][b[0].length];
+        for (int i=0; i<b.length; i++) {
+            for (int j=0; j<b[0].length; j++) {
+                copy[i][j] = b[i][j];
+            }
+        }
+        return copy;
+    }
+    
     public void testAI() {
         for (int i=0; i<30; i++) {
             int[] guess = this.testAI.randomGuessUntilHit();
-            if (this.oBoard.guess(guess[0], guess[1])) this.testAI.hit();
+            if (this.oBoard.guess(guess[0], guess[1])) {
+                this.testAI.hit();
+            }
             this.oBoard.repaint();
         }
     }    
+    
+    public void swapBoards(Board o) {
+        Board temp = new Board(this.getBoardSize(), this.size, this.shipsVisible);
+        temp.copyBoard(this);
+        System.out.println("test 1");
+        for (Ship[] s : this.ships) {
+            for (Ship sh : s) {
+                System.out.println(sh);
+            }
+        }
+        this.copyBoard(o);
+        o.copyBoard(temp);
+        System.out.println("test 2");
+        for (Ship[] s : this.ships) {
+            for (Ship sh : s) {
+                System.out.println(sh);
+            }
+        }
+    }
     //Because the player is going to need to be able to see their ships, but not
     //the opponent's board, we should add an if statement for whether or not
     //the ships are visible (this.shipsVisible)
