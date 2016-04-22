@@ -75,7 +75,7 @@ public class AI {
             
         }
         this.lastNumHits = this.numHits;
-        this.board.guess(this.lastGuess[0], this.lastGuess[1]);
+        //this.board.guess(this.lastGuess[0], this.lastGuess[1]);
         
         return this.lastGuess;
     }

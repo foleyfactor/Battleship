@@ -50,7 +50,6 @@ public class SampleScreenEditable extends javax.swing.JFrame {
         bigBoard = new Board(10, 450, true);
         bigBoard.addMouseListener(bigBoard);
         bigBoard.addMouseMotionListener(bigBoard);
-        bigBoard.addKeyListener(bigBoard);
         smallBoard = new Board(10, 280, false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);

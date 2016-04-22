@@ -1,58 +1,35 @@
 /*
  * 
  */
-// Worked on by James
+// Worked on by James and Alex
 
 package battleship;
 
 
 import java.awt.*; //needed for graphics
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 import java.util.Arrays;
 import javax.swing.*;
-import battleship.Ship;
 import java.awt.event.ActionEvent;
 
-public class Board extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
+public class Board extends JPanel implements MouseListener, MouseMotionListener {
     private Ship[][] ships;
     private Ship[] toBePlaced;
     private boolean shipsVisible, isFinished, isBeingPlaced, mouseInPanel;
     private Ship currShip;
     private boolean[][] guesses;
     private int mouseX=0, mouseY=0;
+    private int numHits, numHitsNeeded;
     
-    //Want to test how my AI does :)
     private Board oBoard;
     private AI AI;
-    private static Random testRandom = new Random();
     
-    private int size;    //in the future - we may need to display more than one board on the screen
-    private int squareSize;
-  
-//    private int xStartPos = 20;//Sets where the board begins drawing
-//    private int yStartPos = 50;//Sets where the board begins drawing
-//    private int numSquaresX = 10;  These two can be replaced with this.getBoardSize();
-//    private int numSquaresY = 10;
-    
-    /* James, sorry to mess with your code, but here was what I was planning on
-     * doing to keep track of the ships:
-     * The array for ships (this.ships) has all values initialized to null
-     * when the array is created. So basically when we place a ship, we set
-     * loop through and set a bunch of references to be that ship (i.e. if 
-     * we have a ship of length 4, we set those four spots = that ship.
-     * Then, when we need to hit a ship, we can call this.ship[x][y].hit() and update
-     * the spot to be already guessed in this.guesses.
-     * 
-     * To check if there is a ship, simply check if this.ships[x][y] != null, and
-     * if so, then there is a ship. I have added a method below (see isShip()).
-     */
-    
+    private int size;    
+    private int squareSize;    
     
     public Board(int s, int size, boolean v) {
         this.ships = new Ship[s][s];
@@ -63,7 +40,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         this.squareSize = size/s;
         this.isBeingPlaced = v;
         this.mouseInPanel = false;
-        //this.currShip = new Ship(testRandom.nextInt(4)+2, testRandom.nextBoolean());
+        
+        this.numHits = 0;
+        this.numHitsNeeded = 0;
     }
     
     public void copyBoard(Board o) {
@@ -84,9 +63,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     
     public boolean canBePlaced(Ship s, int x, int y) {
         if (s == null) return false;
-        boolean vertical = s.vertical;
+        boolean vertical = s.isVertical();
         if (vertical) {
-            for (int i=0; i<s.ySize; i++) {
+            for (int i=0; i<s.getYSize(); i++) {
                 try {
                     if (this.ships[y+i][x] != null) {
                         return false;
@@ -97,7 +76,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             }
             return true;
         }
-        for (int i=0; i<s.xSize; i++) {
+        for (int i=0; i<s.getXSize(); i++) {
             try {
                 if (this.ships[y][x+i] != null) {
                     return false;
@@ -108,26 +87,15 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         return true;
     }
-    //Places solid block (a ship), image of ship could possibly be put over top
-    
-    /*
-     * Could you change this method to be more like the canBePlaced method? Here's why:
-     * if you read the comment above, the ships array can be used to keep track of the 
-     * placed ships' positions. Also, we can always reference ships' positions based
-     * on their bottom left coordinate, orientation and size. Basically, we are going
-     * to check whether or not a ship can be placed before it is actually placed, so 
-     * we don't have to worry about any error checking, all this method needs to do
-     * is to loop through based on the ship's size and orientation and size and set 
-     * this.ships[i][j] = the ship.
-     */
+
     public void placeShip(Ship s, int x, int y){
         s.place();
-        if (s.vertical) {
-            for (int i=0; i<s.ySize; i++) {
+        if (s.isVertical()) {
+            for (int i=0; i<s.getYSize(); i++) {
                 this.ships[y+i][x] = s;
             }
         } else {
-            for (int i=0; i<s.xSize; i++) {
+            for (int i=0; i<s.getXSize(); i++) {
                 this.ships[y][x+i] = s;
                 System.out.println((y+i));
             }
@@ -247,14 +215,14 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             if (this.isBeingPlaced) {
                 x -= this.squareSize/2;
                 y -= this.squareSize/2;
-                int currSize = Math.max(this.currShip.ySize, this.currShip.xSize);
+                int currSize = Math.max(this.currShip.getYSize(), this.currShip.getXSize());
 
                 for (int i=0; i<currSize; i++) {
                     gr.setColor(Color.GRAY);
                     gr.fillRect(x, y, this.squareSize, this.squareSize);
                     gr.setColor(Color.BLACK);
                     gr.drawRect(x, y, this.squareSize, this.squareSize);
-                    if (this.currShip.vertical) {
+                    if (this.currShip.isVertical()) {
                         y -= this.squareSize;
                     } else {
                         x += this.squareSize;
@@ -264,7 +232,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
 
             g.drawImage(img, 0, 0, null);
             try {
-                Thread.sleep(40);
+                Thread.sleep(10);
             } catch (Exception e) {
 
             }
@@ -279,6 +247,10 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         this.guesses[x][y] = true;
         if (this.ships[x][y] != null) {
             this.ships[x][y].hit();
+            this.numHits++;
+            if (this.numHits == this.numHitsNeeded) {
+                this.isFinished = true;
+            }
             return true;
         }
         return false;
@@ -353,8 +325,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public void setShipsToBePlaced(Ship[] s) {
         this.toBePlaced = s;
         this.currShip = this.getNextShip(this.toBePlaced[0]);
-        System.out.println("initialized it.");
-        System.out.println(this.currShip.xSize + " " + this.currShip.vertical);
+        for (Ship sh : s) {
+            this.numHitsNeeded += Math.max(sh.getXSize(), sh.getYSize());
+        }
     }
     
     public Ship getNextShip(Ship s) {
@@ -367,7 +340,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     
     public boolean allShipsPlaced() {
         for (Ship s : this.toBePlaced) {
-            if (! s.isPlaced) {
+            if (! s.isPlaced()) {
                 return false;
             }
         }
@@ -375,33 +348,16 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     }
     
     public boolean allSunk() {
-        for (Ship s : this.toBePlaced) {
-            System.out.println("Ship sunk: " + s.isSunk);
-            if (!s.isSunk) {
-                return false;
+        for (Ship[] s : this.ships) {
+            for (Ship sh : s) {
+                if (sh != null) {
+                    if (!sh.isSunk()) {
+                        return false;
+                    }
+                }
             }
         }
         return true;
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-        
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        System.out.println("hello");
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        System.out.println("yolo");
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            this.toBePlaced[Arrays.asList(this.toBePlaced).indexOf(this.currShip)] = this.currShip.rotate();
-            this.currShip = this.currShip.rotate();
-            this.paintComponent(this.getGraphics(), this.mouseX, this.mouseY, this.currShip);
-        }
     }
 
     @Override
@@ -417,7 +373,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                             this.swapBoards(this.oBoard);
                             this.oBoard.AI.placeShipsRandomly();
                         }
-                    } else if (! this.isBeingPlaced && !this.shipsVisible) {
+                    } else if (! this.isBeingPlaced && !this.isGuessed(d[1], d[0])) {
                         this.guess(d[1], d[0]);
                         this.repaint();
                         this.oBoard.AI.guess("medium");
@@ -436,12 +392,12 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
 
     @Override
     public void mousePressed(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
@@ -457,7 +413,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
@@ -477,10 +433,12 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         action.put("space", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent a) {
-                int index = Arrays.asList(b.toBePlaced).indexOf(b.currShip);
-                b.currShip = b.currShip.rotate();
-                b.toBePlaced[index] = b.currShip;
-                b.paintComponent(b.getGraphics(), b.mouseX, b.mouseY, b.currShip);
+                if (b.mouseInPanel) {
+                    int index = Arrays.asList(b.toBePlaced).indexOf(b.currShip);
+                    b.currShip = b.currShip.rotate();
+                    b.toBePlaced[index] = b.currShip;
+                    b.paintComponent(b.getGraphics(), b.mouseX, b.mouseY, b.currShip);
+                }
             }
         });
     }

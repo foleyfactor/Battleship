@@ -6,9 +6,9 @@
 package battleship;
 
 public class Ship {
-    public int xSize, ySize;
-    public boolean vertical, isSunk, isPlaced;
-    public int numHits;
+    private int xSize, ySize;
+    private boolean vertical, isSunk, isPlaced;
+    private int numHits;
     
     public Ship(int s, boolean v) {
         this.vertical = v;
@@ -48,5 +48,21 @@ public class Ship {
     
     public boolean isPlaced() {
         return this.isPlaced;
+    }
+    
+    public boolean isSunk() {
+        return this.isSunk;
+    }
+    
+    public int getXSize() {
+        return this.xSize;
+    }
+    
+    public int getYSize() {
+        return this.ySize;
+    }
+    
+    public boolean isVertical() {
+        return this.vertical;
     }
 }
