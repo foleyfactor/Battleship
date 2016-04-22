@@ -97,17 +97,26 @@ public class AI {
         return this.numHits;
     }
     
+    public void placeShipsRandomly() {
+        for (Ship s : this.board.getPlacingShips()) {
+            int x, y;
+            do {
+                x = this.random.nextInt(this.board.getOBoard().getBoardSize());
+                y = this.random.nextInt(this.board.getOBoard().getBoardSize());
+            } while (! this.board.getOBoard().canBePlaced(s, x, y));
+            this.board.getOBoard().placeShip(s, x, y);
+        }
+    }
     
-//    public static void main(String[] args) {
-//        Board b1 = new Board(4, true);
-//        Board b2 = new Board(4, true);
-//        Ship[] s1 = new Ship[1];
-//        Ship[] s2 = new Ship[1];
-//        Player p1 = new Player(b1, s1);
-//        AI p2 = new AI(b2, s2, p1);
-//        for (int i=0; i<15; i++) {
-//            int[] coord = p2.alwaysRandomGuess();
-//            System.out.println("My guess is: " + coord[0] + ", " + coord[1]);
-//        }
-//    }
+    public void guess(String difficulty) {
+        int[] coords;
+        if (difficulty.equalsIgnoreCase("medium")) {
+            coords = this.randomGuessUntilHit();
+        } else {
+            coords = this.alwaysRandomGuess();
+        }
+        if (this.board.guess(coords[0], coords[1])) {
+            this.numHits++;
+        }
+    }
 }

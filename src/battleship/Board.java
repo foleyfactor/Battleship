@@ -5,7 +5,7 @@
 
 package battleship;
 
-import java.io.*;
+
 import java.awt.*; //needed for graphics
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,6 +16,8 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.Arrays;
 import javax.swing.*;
+import battleship.Ship;
+import java.awt.event.ActionEvent;
 
 public class Board extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
     private Ship[][] ships;
@@ -23,10 +25,11 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     private boolean shipsVisible, isFinished, isBeingPlaced, mouseInPanel;
     private Ship currShip;
     private boolean[][] guesses;
+    private int mouseX=0, mouseY=0;
     
     //Want to test how my AI does :)
     private Board oBoard;
-    private AI testAI;
+    private AI AI;
     private static Random testRandom = new Random();
     
     private int size;    //in the future - we may need to display more than one board on the screen
@@ -64,18 +67,23 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     }
     
     public void copyBoard(Board o) {
-        this.ships = this.copy(o.ships);
-        this.guesses = o.guesses;
+        this.ships = copy(o.ships);
+        this.guesses = copy(o.guesses);
         this.isFinished = o.isFinished;
         this.shipsVisible = o.shipsVisible;
         this.isBeingPlaced = o.isBeingPlaced;
         this.mouseInPanel = o.mouseInPanel;
         this.oBoard = o.oBoard;
-        this.testAI = o.testAI;
+        this.AI = o.AI;
         this.repaint();
     }
     
+    public Board getOBoard() {
+        return this.oBoard;
+    }
+    
     public boolean canBePlaced(Ship s, int x, int y) {
+        if (s == null) return false;
         boolean vertical = s.vertical;
         if (vertical) {
             for (int i=0; i<s.ySize; i++) {
@@ -126,17 +134,13 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         if (this.allShipsPlaced()) {
             this.isBeingPlaced = false;
-            this.swapBoards(this.oBoard);
-            AI test = new AI(this);
-            this.setAI(test);
-            this.testAI();
         } else {
             this.currShip = this.getNextShip(s);
         }
     }
     
     public void setAI(AI a) {
-        this.testAI = a;
+        this.AI = a;
     }
     
     public void setOBoard(Board o) {
@@ -144,17 +148,17 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         o.oBoard = this;
     }
     
-    public Ship[][] copy(Ship[][] s) {
+    public static Ship[][] copy(Ship[][] s) {
         Ship[][] copy = new Ship[s.length][s[0].length];
         for (int i=0; i<s.length; i++) {
             for (int j=0; j<s[0].length; j++) {
-                copy[i][j] = s[i][j];
+                copy[i][j] = Ship.copy(s[i][j]);
             }
         }
         return copy;
     }
     
-    public boolean[][] copy(boolean[][] b) {
+    public static boolean[][] copy(boolean[][] b) {
         boolean[][] copy = new boolean[b.length][b[0].length];
         for (int i=0; i<b.length; i++) {
             for (int j=0; j<b[0].length; j++) {
@@ -166,9 +170,9 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     
     public void testAI() {
         for (int i=0; i<30; i++) {
-            int[] guess = this.testAI.randomGuessUntilHit();
-            if (this.oBoard.guess(guess[0], guess[1])) {
-                this.testAI.hit();
+            int[] guess = this.AI.randomGuessUntilHit();
+            if (this.guess(guess[0], guess[1])) {
+                this.AI.hit();
             }
             this.oBoard.repaint();
         }
@@ -177,93 +181,38 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public void swapBoards(Board o) {
         Board temp = new Board(this.getBoardSize(), this.size, this.shipsVisible);
         temp.copyBoard(this);
-        System.out.println("test 1");
-        for (Ship[] s : this.ships) {
-            for (Ship sh : s) {
-                System.out.println(sh);
-            }
-        }
         this.copyBoard(o);
         o.copyBoard(temp);
-        System.out.println("test 2");
-        for (Ship[] s : this.ships) {
-            for (Ship sh : s) {
-                System.out.println(sh);
-            }
-        }
+        
+        this.oBoard = o;
+        o.oBoard = this;
     }
-    //Because the player is going to need to be able to see their ships, but not
-    //the opponent's board, we should add an if statement for whether or not
-    //the ships are visible (this.shipsVisible)
-//    public void paint(Graphics g){
-//        int x1, y1, x2, y2, i, j;
-//        x1 = xStartPos;
-//        x2 = squareWidth;
-//        for (i=0; i<numSquaresX; i++){
-//            y1 = xStartPos;
-//            y2 = squareHeight;
-//            
-//            for (j=0; j<numSquaresY; j++){
-//                if (this.isShip(i, j)){
-//                    g.setColor(Color.GRAY);
-//                    
-//                }
-//                else{
-//                    g.setColor(Color.BLUE);
-//                }
-//                g.fillRect(x1, y1, x2, y2);
-//                g.setColor(Color.WHITE);
-//                g.drawRect(x1, y1, x2, y2);
-//                y1 = y1 + squareHeight;
-//                y2 = y2 + squareHeight;
-//            }
-//            x1 = x1 + squareWidth;
-//            x2 = x2 + squareWidth;
-//        }
-//    }
     
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         BufferedImage img = new BufferedImage(this.size+1, this.size+1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gr = (Graphics2D) img.getGraphics();
-        if (this.shipsVisible) {
-            int xP=0, yP=0;
-            for (int i=this.getBoardSize()-1; i>=0; i--) {
-                for (int j=0; j<this.getBoardSize(); j++) {
-                    if (this.isShip(i, j)) {
+        int xP=0, yP=0;
+        for (int i=this.getBoardSize()-1; i>=0; i--) {
+            for (int j=0; j<this.getBoardSize(); j++) {
+                if (this.isGuessed(i, j) && !this.isShip(i, j)) {
+                    gr.setColor(Color.LIGHT_GRAY);
+                } else if (this.isGuessed(i, j)) {
+                    gr.setColor(Color.RED);
+                } else if (this.isShip(i, j) && this.shipsVisible) {
                         gr.setColor(Color.GRAY);
-                    } else {
-                        gr.setColor(Color.WHITE);
-                    }
-                    gr.fillRect(xP, yP, this.squareSize, this.squareSize);
-                    gr.setColor(Color.BLACK);
-                    gr.drawRect(xP, yP, this.squareSize, this.squareSize);
-
-                    xP += this.squareSize;
+                } else {
+                    gr.setColor(Color.WHITE);
                 }
-                xP = 0;
-                yP += this.squareSize;
-            }
-        } else {
-            int xP=0, yP=0;
-            for (int i=this.getBoardSize()-1; i>=0; i--) {
-                for (int j=0; j<this.getBoardSize(); j++) {
-                    if (this.isGuessed(i, j) && !this.oBoard.isShip(i, j)) {
-                        gr.setColor(Color.LIGHT_GRAY);
-                    } else if (this.isGuessed(i, j)) {
-                        gr.setColor(Color.RED);
-                    } else {
-                        gr.setColor(Color.WHITE);
-                    }
-                    gr.fillRect(xP, yP, this.squareSize, this.squareSize);
-                    gr.setColor(Color.BLACK);
-                    gr.drawRect(xP, yP, this.squareSize, this.squareSize);
+                gr.fillRect(xP, yP, this.squareSize, this.squareSize);
+                gr.setColor(Color.BLACK);
+                gr.drawRect(xP, yP, this.squareSize, this.squareSize);
 
-                    xP += this.squareSize;
-                }
-                xP = 0;
-                yP += this.squareSize;
+                xP += this.squareSize;
             }
+            xP = 0;
+            yP += this.squareSize;
         }
         g.drawImage(img, 0, 0, null);
     }
@@ -276,8 +225,12 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             int xP=0, yP=0;
             for (int i=this.getBoardSize()-1; i>=0; i--) {
                 for (int j=0; j<this.getBoardSize(); j++) {
-                    if (this.isShip(i, j)) {
-                        gr.setColor(Color.GRAY);
+                    if (this.isGuessed(i, j) && !this.isShip(i, j)) {
+                        gr.setColor(Color.LIGHT_GRAY);
+                    } else if (this.isGuessed(i, j)) {
+                        gr.setColor(Color.RED);
+                    } else if (this.isShip(i, j) && this.shipsVisible) {
+                            gr.setColor(Color.GRAY);
                     } else {
                         gr.setColor(Color.WHITE);
                     }
@@ -318,21 +271,14 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
     }
     
-//    //Sets up the board for the first time
-//    public void initializeBoard() throws IOException{
-//        setSize(height,width);
-//        
-//        
-//    }
-    
     public boolean isShip(int x, int y) {
         return this.ships[x][y] != null;
     }
     
     public boolean guess(int x, int y) {
-        this.oBoard.guesses[x][y] = true;
-        if (this.oBoard.ships[x][y] != null) {
-            this.oBoard.ships[x][y].hit();
+        this.guesses[x][y] = true;
+        if (this.ships[x][y] != null) {
+            this.ships[x][y].hit();
             return true;
         }
         return false;
@@ -340,6 +286,10 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     
     public boolean isGuessed(int x, int y) {
         return this.guesses[x][y];
+    }
+    
+    public Ship[] getPlacingShips() {
+        return this.toBePlaced;
     }
     
     public int[] getCoords(int x, int y) {
@@ -423,32 +373,64 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
         return true;
     }
+    
+    public boolean allSunk() {
+        for (Ship s : this.toBePlaced) {
+            System.out.println("Ship sunk: " + s.isSunk);
+            if (!s.isSunk) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("hello");
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("yolo");
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            this.toBePlaced[Arrays.asList(this.toBePlaced).indexOf(this.currShip)] = this.currShip.rotate();
+            this.currShip = this.currShip.rotate();
+            this.paintComponent(this.getGraphics(), this.mouseX, this.mouseY, this.currShip);
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (! (e.getX() > this.size || e.getX() < 0)) {
-            if (! (e.getY() > this.size || e.getY() < 0)) {
-                int[] d = this.getCoords(e.getX(), e.getY());
-                if (this.canBePlaced(this.currShip, d[0], d[1])) {
-                    this.placeShip(this.currShip, d[0], d[1]);
-                    this.repaint();
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            if (! (e.getX() > this.size || e.getX() < 0)) {
+                if (! (e.getY() > this.size || e.getY() < 0)) {
+                    int[] d = this.getCoords(e.getX(), e.getY());
+                    if (this.canBePlaced(this.currShip, d[0], d[1]) && this.isBeingPlaced) {
+                        this.placeShip(this.currShip, d[0], d[1]);
+                        this.repaint();
+                        if (! this.isBeingPlaced) {
+                            this.swapBoards(this.oBoard);
+                            this.oBoard.AI.placeShipsRandomly();
+                        }
+                    } else if (! this.isBeingPlaced && !this.shipsVisible) {
+                        this.guess(d[1], d[0]);
+                        this.repaint();
+                        this.oBoard.AI.guess("medium");
+                        this.oBoard.repaint();
+                        if (this.isFinished || this.oBoard.isFinished) {
+                            System.out.println("The winner has won!");
+                        }
+                    }
                 }
             }
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            this.currShip = this.getNextShip(this.currShip);
+            this.paintComponent(this.getGraphics(), e.getX(), e.getY(), this.currShip);
         }
     }
 
@@ -482,6 +464,24 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     public void mouseMoved(MouseEvent e) {
         if (this.mouseInPanel) {
             this.paintComponent(this.getGraphics(), e.getX(), e.getY(), this.currShip);
+            this.mouseX = e.getX();
+            this.mouseY = e.getY();
         }
+    }
+    
+    public void setKeyBindings() {
+        InputMap in = getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap action  = getActionMap();
+        in.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "space");
+        final Board b = this;
+        action.put("space", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                int index = Arrays.asList(b.toBePlaced).indexOf(b.currShip);
+                b.currShip = b.currShip.rotate();
+                b.toBePlaced[index] = b.currShip;
+                b.paintComponent(b.getGraphics(), b.mouseX, b.mouseY, b.currShip);
+            }
+        });
     }
 }

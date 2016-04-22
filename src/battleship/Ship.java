@@ -21,6 +21,16 @@ public class Ship {
         }
         this.isSunk = false;
         this.isPlaced = false;
+        this.numHits = 0;
+    }
+    
+    public static Ship copy(Ship s) {
+        if (s == null) return null;
+        return new Ship(Math.max(s.xSize, s.ySize), s.vertical);
+    }
+    
+    public Ship rotate() {
+        return new Ship(Math.max(this.xSize, this.ySize), !this.vertical);
     }
     
     public void hit() {

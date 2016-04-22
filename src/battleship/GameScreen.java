@@ -16,27 +16,28 @@ import battleship.Board;
  *
  * @author Alex
  */
-public class SampleScreenEditable extends javax.swing.JFrame {
+public class GameScreen extends javax.swing.JFrame {
     
     boolean isPlacing;
     Ship currShip;
-    int squareSize;
-    
+    GameScreen client;
     
     /** Creates new form SampleScreen */
-    public SampleScreenEditable(boolean host) {
+    public GameScreen() {
         initComponents();
-        if (host) {
-            this.isPlacing = true;
-            this.currShip = new Ship(4, true);
-            this.squareSize = this.bigBoard.getSquareSize();
-        }   
+        this.isPlacing = true;
+        this.currShip = new Ship(4, true);
     }
     
-//    public void addHost(GameScreen s) {
-//        this.bigBoard.copyBoard(s.bigBoard);
-//        this.smallBoard.copyBoard(s.smallBoard);
-//    }
+    public void addClient(GameScreen g) {
+        this.client = g;
+    }
+    
+    public void addHost(GameScreen g) {
+        g.addClient(this);
+        this.bigBoard.copyBoard(g.smallBoard);
+        this.smallBoard.copyBoard(g.bigBoard);
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -134,9 +135,7 @@ public class SampleScreenEditable extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                GameScreen g = new GameScreen();
-                //g.bigBoard.setShipsToBePlaced(new Ship[] {new Ship(2, true), new Ship(3, false), new Ship(4, false), new Ship(5, true)});
-                g.setVisible(true);
+                
             }
         });
     }
