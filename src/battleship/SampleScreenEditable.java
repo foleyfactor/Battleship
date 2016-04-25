@@ -133,9 +133,9 @@ public class SampleScreenEditable extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                GameScreen g = new GameScreen();
+//                GameScreen g = new GameScreen();
                 //g.bigBoard.setShipsToBePlaced(new Ship[] {new Ship(2, true), new Ship(3, false), new Ship(4, false), new Ship(5, true)});
-                g.setVisible(true);
+                //g.setVisible(true);
             }
         });
     }

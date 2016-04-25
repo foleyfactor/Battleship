@@ -376,7 +376,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                     } else if (! this.isBeingPlaced && !this.isGuessed(d[1], d[0])) {
                         this.guess(d[1], d[0]);
                         this.repaint();
-                        this.oBoard.AI.guess("medium");
+                        this.oBoard.AI.guess();
                         this.oBoard.repaint();
                         if (this.isFinished || this.oBoard.isFinished) {
                             System.out.println("The winner has won!");

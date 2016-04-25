@@ -15,14 +15,16 @@ public class AI {
     private ArrayList<int[]> neighbours;
     private int lastNumHits, numHits;
     private Board board;
+    private String difficulty;
     
-    public AI(Board b) {
+    public AI(Board b, String d) {
         this.random = new Random();
         this.potentials = new int[b.getBoardSize()][b.getBoardSize()];
         this.lastNumHits = 0;
         this.numHits = 0;
         this.neighbours = new ArrayList();
         this.board = b;
+        this.difficulty = d;
     }
     
     public int[] alwaysRandomGuess() {
@@ -108,9 +110,9 @@ public class AI {
         }
     }
     
-    public void guess(String difficulty) {
+    public void guess() {
         int[] coords;
-        if (difficulty.equalsIgnoreCase("medium")) {
+        if (this.difficulty.equalsIgnoreCase("medium")) {
             coords = this.randomGuessUntilHit();
         } else {
             coords = this.alwaysRandomGuess();

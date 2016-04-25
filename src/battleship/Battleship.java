@@ -15,12 +15,9 @@ public class Battleship {
         s1.setVisible(true);
         
         if (s1.canStart()==true){
-            GameScreen g1 = new GameScreen();
+            GameScreen g1 = new GameScreen("medium");
             g1.getBigBoard().setShipsToBePlaced(battleships);
             g1.getSmallBoard().setShipsToBePlaced(battleships);
-            g1.getBigBoard().setOBoard(g1.getSmallBoard());
-            //g1.getSmallBoard().setAI(new AI(g1.getBigBoard()));
-            g1.getBigBoard().setAI(new AI(g1.getSmallBoard()));
             g1.getBigBoard().setKeyBindings();
             g1.setVisible(true);
         } else {
