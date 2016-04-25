@@ -82,6 +82,10 @@ public class AI {
         return this.lastGuess;
     }
     
+    public int[] probabilityDistributionGuess() {
+        
+    }
+    
     public boolean containsPair(ArrayList<int[]> a, int x, int y) {
         for (int[] i : a) {
             if (i[0] == x && i[1] == y) {
@@ -101,12 +105,14 @@ public class AI {
     
     public void placeShipsRandomly() {
         for (Ship s : this.board.getPlacingShips()) {
+            boolean rotated = this.random.nextBoolean();
             int x, y;
             do {
                 x = this.random.nextInt(this.board.getOBoard().getBoardSize());
                 y = this.random.nextInt(this.board.getOBoard().getBoardSize());
             } while (! this.board.getOBoard().canBePlaced(s, x, y));
-            this.board.getOBoard().placeShip(s, x, y);
+            if (rotated) this.board.getOBoard().placeShip(s.rotate(), x, y);
+            else this.board.getOBoard().placeShip(s, x, y);
         }
     }
     
