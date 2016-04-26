@@ -6,6 +6,7 @@
 package battleship;
 
 
+
 import java.awt.*; //needed for graphics
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -15,6 +16,8 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 public class Board extends JPanel implements MouseListener, MouseMotionListener {
     private Ship[][] ships;
@@ -329,6 +332,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     public void setShipsToBePlaced(Ship[] s) {
         this.toBePlaced = s;
         this.currShip = this.getNextShip(this.toBePlaced[0]);
+        System.out.println("after this.currship");
         for (Ship sh : s) {
             this.numHitsNeeded += Math.max(sh.getXSize(), sh.getYSize());
         }
@@ -385,9 +389,21 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                         if (this.isFinished ) {
                             
                             JFrame screen = (JFrame) SwingUtilities.getWindowAncestor(this);
-                            int response = JOptionPane.showConfirmDialog(screen, "You have won!");
-                            System.out.println(response);
+                            Object [] options  = {"Play again", "Quit"};
+                            int response = JOptionPane.showConfirmDialog(screen, "Would you like to play again?","You have won!",JOptionPane.YES_NO_OPTION);
                             
+                            System.out.println(response);
+                            if (response == 0){
+                                StartScreen s2 = new StartScreen();
+                                s2.setVisible(true);
+                                
+                                screen.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                screen.dispatchEvent(new WindowEvent(screen, WindowEvent.WINDOW_CLOSING));
+                                
+                            }
+                            if (response == 1){
+                                System.exit(0);
+                            }
                             
                             
                             

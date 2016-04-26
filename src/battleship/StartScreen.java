@@ -4,7 +4,7 @@
  */
 package battleship;
 
-import static battleship.Battleship.battleships;
+
 
 /**
  *
@@ -23,12 +23,15 @@ public class StartScreen extends javax.swing.JFrame {
     }
     //Determines if a difficulty has been selected so the player can advance to the game screen
     public void startGame(){
+        System.out.println("Hello");
         GameScreen g1 = new GameScreen(this.difficulty);
-        g1.getBigBoard().setShipsToBePlaced(battleships);
-        g1.getSmallBoard().setShipsToBePlaced(battleships);
-            
+        System.out.println("After game screen");
+        g1.getBigBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});
+        g1.getSmallBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});
+        System.out.println("Hi");    
         g1.setVisible(true);
         this.setVisible(false);
+        
     }
 
     /**
@@ -146,8 +149,9 @@ public class StartScreen extends javax.swing.JFrame {
 
     private void EasyModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EasyModeMouseClicked
         this.difficulty = "easy";
-        
+        System.out.println("Test test 1 2");
         this.startGame();
+        
         
     }//GEN-LAST:event_EasyModeMouseClicked
 

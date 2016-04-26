@@ -23,13 +23,15 @@ public class GameScreen extends javax.swing.JFrame {
     GameScreen client;
     
     /** Creates new form SampleScreen */
-    public GameScreen(String difficulty) {
+    public GameScreen(String difficulty ) {
         initComponents();
         this.bigBoard.setOBoard(this.smallBoard);
         this.isPlacing = true;
         this.currShip = new Ship(4, true);
         this.bigBoard.setAI(new AI(this.smallBoard, difficulty));
+        
         this.bigBoard.setKeyBindings();
+        
     }
     
     public void addClient(GameScreen g) {
