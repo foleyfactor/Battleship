@@ -14,14 +14,10 @@ public class Battleship {
         StartScreen s1 = new StartScreen();
         s1.setVisible(true);
         
-        if (s1.canStart()==true){
-            GameScreen g1 = new GameScreen("medium");
-            g1.getBigBoard().setShipsToBePlaced(battleships);
-            g1.getSmallBoard().setShipsToBePlaced(battleships);
-            g1.getBigBoard().setKeyBindings();
-            g1.setVisible(true);
-        } else {
-        }
+        
+            
+        
+        
         
         
     }

@@ -4,6 +4,8 @@
  */
 package battleship;
 
+import static battleship.Battleship.battleships;
+
 /**
  *
  * @author milnj5934
@@ -20,13 +22,13 @@ public class StartScreen extends javax.swing.JFrame {
         
     }
     //Determines if a difficulty has been selected so the player can advance to the game screen
-    public boolean canStart(){
-        if (difficultySelected = true){
-            return true;
-        }
-        else{
-            return false;
-        }
+    public void startGame(){
+        GameScreen g1 = new GameScreen(this.difficulty);
+        g1.getBigBoard().setShipsToBePlaced(battleships);
+        g1.getSmallBoard().setShipsToBePlaced(battleships);
+            
+        g1.setVisible(true);
+        this.setVisible(false);
     }
 
     /**
@@ -143,19 +145,21 @@ public class StartScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void EasyModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EasyModeMouseClicked
-        difficulty = "easy";
-        difficultySelected = true;
+        this.difficulty = "easy";
+        
+        this.startGame();
         
     }//GEN-LAST:event_EasyModeMouseClicked
 
     private void MediumModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MediumModeMouseClicked
-         difficulty = "medium";
-         difficultySelected = true;
+         this.difficulty = "medium";
+         this.startGame();
+         
     }//GEN-LAST:event_MediumModeMouseClicked
 
     private void HardModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HardModeMouseClicked
-         difficulty = "hard";
-         difficultySelected = true;
+         this.difficulty = "hard";
+         this.startGame();
     }//GEN-LAST:event_HardModeMouseClicked
     
     
