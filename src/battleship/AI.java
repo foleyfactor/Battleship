@@ -87,11 +87,31 @@ public class AI {
         for (int i=0; i<this.board.getBoardSize(); i++) {
             for (int j=0; j<this.board.getBoardSize(); j++) {
                 for (Ship s : this.board.getPlacingShips()) {
+                    if (s.isSunk()) continue;
                     if (this.couldBePlaced(s, i, j)) {
                         this.theoreticallyPlace(s, i, j);
                     }
                     if (this.couldBePlaced(s.rotate(), i, j)) {
                         this.theoreticallyPlace(s.rotate(), i, j);
+                    }
+                    if (this.board.getGuesses()[i][j] && this.board.getShips()[i][j] != null) {
+                        for (int x=-1; x<=1; x++) {
+                            for (int y=-1; y<=1; y++) {
+                                //We only want to check lattice neighbours, not diagonals.
+                                if (Math.abs(x-y) % 2 == 0) {
+                                    continue;
+                                }
+                                if (i+x < 0 || i+x >= this.board.getBoardSize()) {
+                                    continue;
+                                }
+                                if (j+y < 0 || j+y >= this.board.getBoardSize()) {
+                                    continue;
+                                }
+                                if (!this.board.isGuessed(i+x, j+y)) {
+                                    this.potentials[i+x][j+y] += 5;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -103,7 +123,22 @@ public class AI {
             System.out.println("");
         }
         System.out.println("");
-        return new int[] {1, 2};
+        return getMax(this.potentials);
+    }
+    
+    public static int[] getMax(int[][] a) {
+        int currMax = Integer.MIN_VALUE;
+        int[] currMaxIndex = new int[] {Integer.MIN_VALUE, Integer.MIN_VALUE};
+        for (int i=0; i<a.length; i++) {
+            for (int j=0; j<a[0].length; j++) {
+                if (a[i][j] > currMax) {
+                    currMaxIndex[0] = i;
+                    currMaxIndex[1] = j;
+                    currMax = a[i][j];
+                }
+            }
+        }
+        return currMaxIndex;
     }
     
     public void theoreticallyPlace(Ship s, int x, int y) {
