@@ -83,7 +83,56 @@ public class AI {
     }
     
     public int[] probabilityDistributionGuess() {
-        
+        for (int i=0; i<this.board.getBoardSize(); i++) {
+            for (int j=0; j<this.board.getBoardSize(); j++) {
+                for (Ship s : this.board.getPlacingShips()) {
+                    if (this.couldBePlaced(s, i, j)) {
+                        this.theoreticallyPlace(s, i, j);
+                    }
+                    if (this.couldBePlaced(s.rotate(), i, j)) {
+                        this.theoreticallyPlace(s.rotate(), i, j);
+                    }
+                }
+            }
+        }
+    }
+    
+    public void theoreticallyPlace(Ship s, int x, int y) {
+        if (s.isVertical()) {
+            for (int i=0; i<s.getYSize(); i++) {
+                this.potentials[y+i][x] ++;
+            }
+        } else {
+            for (int i=0; i<s.getXSize(); i++) {
+                this.potentials[y][x+i] ++;
+            }
+        }
+    }
+    
+    public boolean couldBePlaced(Ship s, int x, int y) {
+        boolean vertical = s.isVertical();
+        if (vertical) {
+            for (int i=0; i<s.getYSize(); i++) {
+                try {
+                    if (this.board.getGuesses()[y+i][x]) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        for (int i=0; i<s.getXSize(); i++) {
+            try {
+                if (this.board.getGuesses()[y+i][x]) {
+                    return false;
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
     }
     
     public boolean containsPair(ArrayList<int[]> a, int x, int y) {

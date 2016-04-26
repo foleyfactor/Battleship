@@ -322,6 +322,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         return this.ships;
     }
     
+    public boolean[][] getGuesses() {
+        return this.guesses;
+    }
+    
     public void setShipsToBePlaced(Ship[] s) {
         this.toBePlaced = s;
         this.currShip = this.getNextShip(this.toBePlaced[0]);
