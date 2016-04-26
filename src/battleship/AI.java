@@ -83,6 +83,7 @@ public class AI {
     }
     
     public int[] probabilityDistributionGuess() {
+        this.potentials = new int[this.board.getBoardSize()][this.board.getBoardSize()];
         for (int i=0; i<this.board.getBoardSize(); i++) {
             for (int j=0; j<this.board.getBoardSize(); j++) {
                 for (Ship s : this.board.getPlacingShips()) {
@@ -95,6 +96,14 @@ public class AI {
                 }
             }
         }
+        for (int[] i : this.potentials) {
+            for (int j : i) {
+                System.out.print(j + " ");
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+        return new int[] {1, 2};
     }
     
     public void theoreticallyPlace(Ship s, int x, int y) {
@@ -110,8 +119,7 @@ public class AI {
     }
     
     public boolean couldBePlaced(Ship s, int x, int y) {
-        boolean vertical = s.isVertical();
-        if (vertical) {
+        if (s.isVertical()) {
             for (int i=0; i<s.getYSize(); i++) {
                 try {
                     if (this.board.getGuesses()[y+i][x]) {
@@ -125,7 +133,7 @@ public class AI {
         }
         for (int i=0; i<s.getXSize(); i++) {
             try {
-                if (this.board.getGuesses()[y+i][x]) {
+                if (this.board.getGuesses()[y][x+i]) {
                     return false;
                 }
             } catch (Exception e) {
@@ -155,13 +163,18 @@ public class AI {
     public void placeShipsRandomly() {
         for (Ship s : this.board.getPlacingShips()) {
             boolean rotated = this.random.nextBoolean();
+            Ship afterRotate;
+            if (rotated) {
+                afterRotate = s.rotate();
+            } else {
+                afterRotate = s;
+            }
             int x, y;
             do {
                 x = this.random.nextInt(this.board.getOBoard().getBoardSize());
                 y = this.random.nextInt(this.board.getOBoard().getBoardSize());
-            } while (! this.board.getOBoard().canBePlaced(s, x, y));
-            if (rotated) this.board.getOBoard().placeShip(s.rotate(), x, y);
-            else this.board.getOBoard().placeShip(s, x, y);
+            } while (! this.board.getOBoard().canBePlaced(afterRotate, x, y));
+            this.board.getOBoard().placeShip(afterRotate, x, y);
         }
     }
     
@@ -169,6 +182,8 @@ public class AI {
         int[] coords;
         if (this.difficulty.equalsIgnoreCase("medium")) {
             coords = this.randomGuessUntilHit();
+        } else if (this.difficulty.equalsIgnoreCase("hard")) {
+            coords = this.probabilityDistributionGuess();
         } else {
             coords = this.alwaysRandomGuess();
         }
