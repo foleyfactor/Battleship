@@ -4,21 +4,10 @@
  */
 package battleship;
 
-import javax.swing.JFrame;
-
 public class Battleship {
-    
-    
     
     public static void main(String[] args) {
         StartScreen s1 = new StartScreen();
         s1.setVisible(true);
-        
-        
-            
-        
-        
-        
-        
     }
 }
