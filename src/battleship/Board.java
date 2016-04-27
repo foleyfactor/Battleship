@@ -412,8 +412,22 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                         }
                         else if(this.oBoard.isFinished){
                             JFrame screen = (JFrame) SwingUtilities.getWindowAncestor(this);
-                            JOptionPane.showMessageDialog(screen, "The AI has won :(");
+                            int response = JOptionPane.showConfirmDialog(screen, "Would you like to play again?","The AI has won:(",JOptionPane.YES_NO_OPTION);
+                            System.out.println(response);
+                            if (response == 0){
+                                StartScreen s2 = new StartScreen();
+                                s2.setVisible(true);
+                                
+                                screen.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                screen.dispatchEvent(new WindowEvent(screen, WindowEvent.WINDOW_CLOSING));
+                                
+                            }
+                            if (response == 1){
+                                System.exit(0);
+                            }
+                        
                         }
+                        
                             
                         
                     }
