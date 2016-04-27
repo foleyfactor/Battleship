@@ -117,13 +117,12 @@ public class AI {
     public boolean couldBePlaced(Ship s, int x, int y) {
         //Check the ship's orientation
         if (s.isVertical()) {
-            
             //Loop through the vertical ship's coordinates
             for (int i=0; i<s.getYSize(); i++) {
                 try {
                     //If this coordinate has already been guessed then the 
                     //ship can't be placed here
-                    if (this.board.getGuesses()[y+i][x]) {
+                    if (this.board.getGuesses()[y+i][x] && this.board.getShips()[y+i][x] == null) {
                         return false;
                     }
                 } catch (Exception e) {
@@ -141,7 +140,7 @@ public class AI {
             try {
                 //If this coordinate has already been guessed then the 
                 //ship can't be placed here
-                if (this.board.getGuesses()[y][x+i]) {
+                if (this.board.getGuesses()[y][x+i] && this.board.getShips()[y][x+i] == null) {
                     return false;
                 }
             } catch (Exception e) {
@@ -161,16 +160,30 @@ public class AI {
     public void theoreticallyPlace(Ship s, int x, int y) {
         //Check the ship's orientation
         if (s.isVertical()) {
+            int value = 1;
             //Loop through the vertical ship's theoretical position and add 1 to the
-            //coordinates at which it would be placed
+            //value if the ship has already been guessed there
             for (int i=0; i<s.getYSize(); i++) {
-                this.potentials[y+i][x] ++;
+                if (this.board.getGuesses()[y+i][x] && this.board.getShips()[y+i][x] != null) {
+                    value ++;
+                }
+            }
+            //Add the value to each of the squares that would have the ship
+            for (int i=0; i<s.getYSize(); i++) {
+                this.potentials[y+i][x] += value;
             }
         } else {
+            int value = 1;
             //Loop through the horizontal ship's theoretical position and add 1 to the
             //coordinates at which it would be placed
             for (int i=0; i<s.getXSize(); i++) {
-                this.potentials[y][x+i] ++;
+                if (this.board.getGuesses()[y][x+i] && this.board.getShips()[y][x+i] != null) {
+                    value ++;
+                }
+            }
+            
+            for (int i=0; i<s.getXSize(); i++) {
+                this.potentials[y][x+i] += value;
             }
         }
     }
@@ -242,7 +255,13 @@ public class AI {
         System.out.println("");
         
         //Return the coordinates that have the most potential for having a ship
-        return getMaxIndex(this.potentials);
+        int[] coords;
+        do {
+            coords = getMaxIndex(this.potentials);
+            this.potentials[coords[0]][coords[1]] = 0;
+        } while (this.board.isGuessed(coords[0], coords[1]));
+        
+        return coords;
     }
     
     //Method that guesses for the AI, based on its difficulty
