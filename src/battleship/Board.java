@@ -385,14 +385,13 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                         }
                     } else if (! this.isBeingPlaced && !this.isGuessed(d[1], d[0])) {
                         this.guess(d[1], d[0]);
-                        this.screen.drawStats();
                         this.repaint();
                         this.oBoard.AI.guess();
                         this.oBoard.repaint();
+                        this.screen.drawStats();
                         if (this.isFinished ) {
                             
                             JFrame screen = (JFrame) SwingUtilities.getWindowAncestor(this);
-                            Object [] options  = {"Play again", "Quit"};
                             int response = JOptionPane.showConfirmDialog(screen, "Would you like to play again?","You have won!",JOptionPane.YES_NO_OPTION);
                             
                             System.out.println(response);
@@ -421,8 +420,10 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                 }
             }
         } else if (e.getButton() == MouseEvent.BUTTON3) {
-            this.currShip = this.getNextShip(this.currShip);
-            this.paintComponent(this.getGraphics(), e.getX(), e.getY(), this.currShip);
+            if (this.isBeingPlaced) {
+                this.currShip = this.getNextShip(this.currShip);
+                this.paintComponent(this.getGraphics(), e.getX(), e.getY(), this.currShip);
+            }
         }
     }
 
@@ -469,7 +470,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         action.put("space", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent a) {
-                if (b.mouseInPanel) {
+                if (b.mouseInPanel && b.isBeingPlaced) {
                     int index = Arrays.asList(b.toBePlaced).indexOf(b.currShip);
                     b.currShip = b.currShip.rotate();
                     b.toBePlaced[index] = b.currShip;

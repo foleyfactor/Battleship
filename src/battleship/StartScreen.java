@@ -23,12 +23,9 @@ public class StartScreen extends javax.swing.JFrame {
     }
     //Determines if a difficulty has been selected so the player can advance to the game screen
     public void startGame(){
-        System.out.println("Hello");
         GameScreen g1 = new GameScreen(this.difficulty);
-        System.out.println("After game screen");
         g1.getBigBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});
-        g1.getSmallBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});
-        System.out.println("Hi");    
+        g1.getSmallBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});   
         g1.setVisible(true);
         this.setVisible(false);
         
@@ -44,9 +41,9 @@ public class StartScreen extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        mainPanel = new javax.swing.JPanel();
+        title = new javax.swing.JLabel();
+        difficultyLabel = new javax.swing.JLabel();
         EasyMode = new javax.swing.JButton();
         MediumMode = new javax.swing.JButton();
         HardMode = new javax.swing.JButton();
@@ -68,14 +65,14 @@ public class StartScreen extends javax.swing.JFrame {
         setForeground(new java.awt.Color(0, 153, 255));
         setPreferredSize(new java.awt.Dimension(898, 600));
 
-        jPanel2.setBackground(new java.awt.Color(0, 153, 255));
-        jPanel2.setPreferredSize(new java.awt.Dimension(898, 600));
+        mainPanel.setBackground(new java.awt.Color(0, 153, 255));
+        mainPanel.setPreferredSize(new java.awt.Dimension(898, 600));
 
-        jLabel1.setFont(new java.awt.Font("Impact", 2, 48)); // NOI18N
-        jLabel1.setText("Battleship");
+        title.setFont(new java.awt.Font("Impact", 2, 48)); // NOI18N
+        title.setText("Battleship");
 
-        jLabel2.setFont(new java.awt.Font("Impact", 0, 18)); // NOI18N
-        jLabel2.setText("Choose Difficulty");
+        difficultyLabel.setFont(new java.awt.Font("Impact", 0, 18)); // NOI18N
+        difficultyLabel.setText("Choose Difficulty");
 
         EasyMode.setFont(new java.awt.Font("Agency FB", 1, 36)); // NOI18N
         EasyMode.setText("Easy");
@@ -101,49 +98,51 @@ public class StartScreen extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(273, 273, 273)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(310, 310, 310)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(MediumMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(EasyMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(HardMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(277, Short.MAX_VALUE))
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap(367, Short.MAX_VALUE)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(310, 310, 310))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(EasyMode, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(difficultyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(MediumMode, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(HardMode, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(366, 366, 366))))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(28, 28, 28)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
+                .addComponent(title)
+                .addGap(119, 119, 119)
+                .addComponent(difficultyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
                 .addComponent(EasyMode)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MediumMode)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(HardMode)
-                .addContainerGap(88, Short.MAX_VALUE))
+                .addContainerGap(161, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -151,7 +150,6 @@ public class StartScreen extends javax.swing.JFrame {
 
     private void EasyModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EasyModeMouseClicked
         this.difficulty = "easy";
-        System.out.println("Test test 1 2");
         this.startGame();
         
         
@@ -210,9 +208,9 @@ public class StartScreen extends javax.swing.JFrame {
     private javax.swing.JButton EasyMode;
     private javax.swing.JButton HardMode;
     private javax.swing.JButton MediumMode;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel difficultyLabel;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel mainPanel;
+    private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 }
