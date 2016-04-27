@@ -30,11 +30,12 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     
     private Board oBoard;
     private AI AI;
+    private GameScreen screen;
     
     private int size;    
     private int squareSize;    
     
-    public Board(int s, int size, boolean v) {
+    public Board(int s, int size, boolean v, GameScreen g) {
         this.ships = new Ship[s][s];
         this.guesses = new boolean[s][s];
         this.isFinished = false;
@@ -43,6 +44,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
         this.squareSize = size/s;
         this.isBeingPlaced = v;
         this.mouseInPanel = false;
+        this.screen = g;
         
         this.numHits = 0;
         this.numHitsNeeded = 0;
@@ -150,7 +152,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
     }    
     
     public void swapBoards(Board o) {
-        Board temp = new Board(this.getBoardSize(), this.size, this.shipsVisible);
+        Board temp = new Board(this.getBoardSize(), this.size, this.shipsVisible, null);
         temp.copyBoard(this);
         this.copyBoard(o);
         o.copyBoard(temp);
@@ -383,6 +385,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
                         }
                     } else if (! this.isBeingPlaced && !this.isGuessed(d[1], d[0])) {
                         this.guess(d[1], d[0]);
+                        this.screen.drawStats();
                         this.repaint();
                         this.oBoard.AI.guess();
                         this.oBoard.repaint();

@@ -19,7 +19,7 @@ public class StartScreen extends javax.swing.JFrame {
     public StartScreen() {
         
         initComponents();
-        
+        this.setResizable(false);
     }
     //Determines if a difficulty has been selected so the player can advance to the game screen
     public void startGame(){
@@ -66,8 +66,10 @@ public class StartScreen extends javax.swing.JFrame {
         setTitle("Battleship");
         setBackground(new java.awt.Color(255, 0, 0));
         setForeground(new java.awt.Color(0, 153, 255));
+        setPreferredSize(new java.awt.Dimension(898, 600));
 
         jPanel2.setBackground(new java.awt.Color(0, 153, 255));
+        jPanel2.setPreferredSize(new java.awt.Dimension(898, 600));
 
         jLabel1.setFont(new java.awt.Font("Impact", 2, 48)); // NOI18N
         jLabel1.setText("Battleship");
@@ -137,11 +139,11 @@ public class StartScreen extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
         );
 
         pack();

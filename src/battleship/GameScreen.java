@@ -20,7 +20,7 @@ public class GameScreen extends javax.swing.JFrame {
     
     boolean isPlacing;
     Ship currShip;
-    GameScreen client;
+    
     
     /** Creates new form SampleScreen */
     public GameScreen(String difficulty ) {
@@ -34,15 +34,36 @@ public class GameScreen extends javax.swing.JFrame {
         
     }
     
-    public void addClient(GameScreen g) {
-        this.client = g;
+    public void drawStats (){
+        int AIGuesses = 0;
+        int userGuesses = 0;
+        int AIHits = 0;
+        int userHits = 0;
+        for(int i = 0; i<this.getBigBoard().getGuesses().length; i++){
+            for (int j = 0; j<this.getBigBoard().getGuesses().length; j++){
+                if (this.getBigBoard().getGuesses()[i][j]){
+                    userGuesses++;
+                   if (this.getBigBoard().getShips()[i][j] != null){
+                       userHits++;
+                   }
+                   
+                }
+                if (this.getSmallBoard().getGuesses()[i][j]){
+                    AIGuesses++;
+                   if (this.getSmallBoard().getShips()[i][j] != null){
+                       AIHits++;
+                   }
+                }
+            }
+        }
+        this.AIShots.setText("Shots: " + AIGuesses);
+        this.userShots.setText("Shots: " + userGuesses);
+        this.AIHits.setText("Hits: " + AIHits);
+        this.userHits.setText("Hits: " + userHits);
     }
+   
     
-    public void addHost(GameScreen g) {
-        g.addClient(this);
-        this.bigBoard.copyBoard(g.smallBoard);
-        this.smallBoard.copyBoard(g.bigBoard);
-    }
+    
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -53,35 +74,58 @@ public class GameScreen extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        bigBoard = new Board(10, 450, true);
-        bigBoard.addMouseListener(bigBoard);
-        bigBoard.addMouseMotionListener(bigBoard);
-        smallBoard = new Board(10, 280, false);
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        userLabel = new javax.swing.JLabel();
+        AILabel = new javax.swing.JLabel();
+        userHits = new javax.swing.JLabel();
+        AIShots = new javax.swing.JLabel();
+        AIHits = new javax.swing.JLabel();
+        userShots = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
+        setResizable(false);
 
-        org.jdesktop.layout.GroupLayout bigBoardLayout = new org.jdesktop.layout.GroupLayout(bigBoard);
-        bigBoard.setLayout(bigBoardLayout);
-        bigBoardLayout.setHorizontalGroup(
-            bigBoardLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 453, Short.MAX_VALUE)
         );
-        bigBoardLayout.setVerticalGroup(
-            bigBoardLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 453, Short.MAX_VALUE)
         );
 
-        org.jdesktop.layout.GroupLayout smallBoardLayout = new org.jdesktop.layout.GroupLayout(smallBoard);
-        smallBoard.setLayout(smallBoardLayout);
-        smallBoardLayout.setHorizontalGroup(
-            smallBoardLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 281, Short.MAX_VALUE)
         );
-        smallBoardLayout.setVerticalGroup(
-            smallBoardLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 281, Short.MAX_VALUE)
         );
+
+        userLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        userLabel.setText("User");
+
+        AILabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        AILabel.setText("AI");
+
+        userHits.setText("Hits: 0");
+
+        AIShots.setText("Shots: 0");
+
+        AIHits.setText("Hits: 0");
+
+        userShots.setText("Shots: 0");
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setText("Statistics");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -89,20 +133,50 @@ public class GameScreen extends javax.swing.JFrame {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(25, 25, 25)
-                .add(bigBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 129, Short.MAX_VALUE)
-                .add(smallBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(91, 91, 91)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(userHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(userShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(userLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 81, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(38, 38, 38)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 99, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(AIShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(AIHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(0, 111, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 112, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(126, Short.MAX_VALUE)
-                .add(bigBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(21, 21, 21))
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(smallBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(77, 77, 77)
+                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(userLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 57, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(userHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, AIHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(18, 18, 18)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(userShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(AIShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -153,8 +227,15 @@ public class GameScreen extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private Board bigBoard;
-    private Board smallBoard;
+    private javax.swing.JLabel AIHits;
+    private javax.swing.JLabel AILabel;
+    private javax.swing.JLabel AIShots;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel userHits;
+    private javax.swing.JLabel userLabel;
+    private javax.swing.JLabel userShots;
     // End of variables declaration//GEN-END:variables
 
 }
