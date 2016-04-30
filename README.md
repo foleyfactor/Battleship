@@ -1,6 +1,6 @@
 # Battleship
-ICS4UI Team Software Project: LAN Battleship game with AI.
+ICS4UI Team Software Project: Battleship game with AI.
 
-Beautiful Battleship Java game featuring different AIs with different strengths, attractive GUI and LAN multiplayer (_yes, this is the next LAN party craze!_).
+Battleship board game written in Java with three levels of AI, each with their own strategy.
 
 Created by Alex Foley ([@foleyfactor](http://github.com/foleyfactor)) and James Milne ([@jamessss123](http://github.com/jamessss123)).
