@@ -1,31 +1,35 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * StartScreen Class (Window that prompts user for level)
+ * 
+ * Written by  Alex Foley & James Milne for the 
+ * ICS4UI Software Design Project
  */
 package battleship;
 
-
-
-/**
- *
- * @author milnj5934
- */
-
+//Class declaration
 public class StartScreen extends javax.swing.JFrame {
-    String difficulty;
-    boolean difficultySelected;
-
+    private String difficulty;
     
+    //Class constructor
     public StartScreen() {
-        
+        //Initialize the form stuff
         initComponents();
+        
+        //Don't let the user resize this window
         this.setResizable(false);
     }
-    //Determines if a difficulty has been selected so the player can advance to the game screen
+    
+    //Method for starting a game
     public void startGame(){
+        //Create a new GameScreen with the correct difficulty based on user choice
         GameScreen g1 = new GameScreen(this.difficulty);
+        
+        //Set the ships for the big and small board to be the standard ships for
+        //a game of battleship
         g1.getBigBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});
         g1.getSmallBoard().setShipsToBePlaced(new Ship[] {new Ship(5, true), new Ship(4, true), new Ship(3, true), new Ship(3, true), new Ship(2, true)});   
+        
+        //Set the game screen to be visible and hide this window
         g1.setVisible(true);
         this.setVisible(false);
         
@@ -40,24 +44,12 @@ public class StartScreen extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
         mainPanel = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
         difficultyLabel = new javax.swing.JLabel();
         EasyMode = new javax.swing.JButton();
         MediumMode = new javax.swing.JButton();
         HardMode = new javax.swing.JButton();
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
@@ -148,68 +140,33 @@ public class StartScreen extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    //Method called when the easy button is clicked
     private void EasyModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EasyModeMouseClicked
+        //Set the difficulty to be easy
         this.difficulty = "easy";
+        //Start the game
         this.startGame();
-        
-        
     }//GEN-LAST:event_EasyModeMouseClicked
-
+    //Method called when the medium mode is selected
     private void MediumModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MediumModeMouseClicked
+         //Set the difficulty to be medium
          this.difficulty = "medium";
+         //Start the game
          this.startGame();
-         
     }//GEN-LAST:event_MediumModeMouseClicked
 
     private void HardModeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HardModeMouseClicked
+         //Set the difficulty to be hard
          this.difficulty = "hard";
+         //Start the game
          this.startGame();
     }//GEN-LAST:event_HardModeMouseClicked
     
-    
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(StartScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(StartScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(StartScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(StartScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-                new StartScreen().setVisible(true);
-                
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton EasyMode;
     private javax.swing.JButton HardMode;
     private javax.swing.JButton MediumMode;
     private javax.swing.JLabel difficultyLabel;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables

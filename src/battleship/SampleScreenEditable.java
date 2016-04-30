@@ -1,65 +1,66 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This class is a copy of the GameScreen class so that if the auto-generated 
+ * code regenerates we could replace the code that we had to edit - not actually
+ * used by any of the other classes, just a backup of GameScreen
  */
 
 package battleship;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import javax.swing.JPanel;
-import battleship.Board;
-
-/**
- *
- * @author Alex
- */
 public class SampleScreenEditable extends javax.swing.JFrame {
     
-    boolean isPlacing;
-    Ship currShip;
     
-    
-    /** Creates new form SampleScreen */
+    //SampleScreenEditable constructor
     public SampleScreenEditable(String difficulty ) {
+        //Initialize the GUI stuff
         initComponents();
+        
+        //Set the big board and small board to be opponents
         this.bigBoard.setOBoard(this.smallBoard);
-        this.isPlacing = true;
-        this.currShip = new Ship(4, true);
+       
+        //Set the AI on the board based on the game's difficulty
         this.bigBoard.setAI(new AI(this.smallBoard, difficulty));
         
+        //Set the key bindingd for the big board
         this.bigBoard.setKeyBindings();
         
     }
     
+    //Method for drawing the stats on the board
     public void drawStats (){
+        //Initialize all of the guesses and hits to 0
         int AIGuesses = 0;
         int userGuesses = 0;
-        int AIHits = 0;
-        int userHits = 0;
-        for(int i = 0; i<this.getBigBoard().getGuesses().length; i++){
-            for (int j = 0; j<this.getBigBoard().getGuesses().length; j++){
-                if (this.getBigBoard().getGuesses()[i][j]){
+        int numAIHits = 0;
+        int numUserHits = 0;
+        
+        //Loop through all of the squares on the board
+        for(int i = 0; i<this.getBigBoard().getBoardSize(); i++){
+            for (int j = 0; j<this.getBigBoard().getBoardSize(); j++){
+                //If the square is guessed by the user, increment the number of 
+                //guesses
+                if (this.getBigBoard().isGuessed(i, j)){
                     userGuesses++;
-                   if (this.getBigBoard().getShips()[i][j] != null){
-                       userHits++;
+                   //If there is a ship there, increment the number of hits
+                   if (this.getBigBoard().isShip(i, j)){
+                       numUserHits++;
                    }
-                   
                 }
-                if (this.getSmallBoard().getGuesses()[i][j]){
+                //If the square is guessed by the AI, increment the number of 
+                //guesses
+                if (this.getSmallBoard().isGuessed(i, j)){
                     AIGuesses++;
-                   if (this.getSmallBoard().getShips()[i][j] != null){
-                       AIHits++;
+                   //If there is a ship there, increment the number of hits
+                   if (this.getSmallBoard().isShip(i, j)){
+                       numAIHits++;
                    }
                 }
             }
         }
+        //Update the text to reflect the stats calculated
         this.AIShots.setText("Shots: " + AIGuesses);
         this.userShots.setText("Shots: " + userGuesses);
-        this.AIHits.setText("Hits: " + AIHits);
-        this.userHits.setText("Hits: " + userHits);
+        this.AIHits.setText("Hits: " + numAIHits);
+        this.userHits.setText("Hits: " + numUserHits);
     }
    
     
@@ -80,12 +81,12 @@ public class SampleScreenEditable extends javax.swing.JFrame {
         AIShots = new javax.swing.JLabel();
         AIHits = new javax.swing.JLabel();
         userShots = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        statsLabel = new javax.swing.JLabel();
 
-        //bigBoard = new Board(10, 450, true, this);
-        bigBoard.addMouseListener(bigBoard);
-        bigBoard.addMouseMotionListener(bigBoard);
-        //smallBoard = new Board(10, 280, false, this);
+        // bigBoard = new Board(10, 450, true, this);
+        // bigBoard.addMouseListener(bigBoard);
+        // bigBoard.addMouseMotionListener(bigBoard);
+        // smallBoard = new Board(10, 280, false, this);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
@@ -127,8 +128,8 @@ public class SampleScreenEditable extends javax.swing.JFrame {
 
         userShots.setText("Shots: 0");
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel1.setText("Statistics");
+        statsLabel.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        statsLabel.setText("Statistics");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,25 +138,24 @@ public class SampleScreenEditable extends javax.swing.JFrame {
             .add(layout.createSequentialGroup()
                 .add(25, 25, 25)
                 .add(bigBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 127, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(91, 91, 91)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(userHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(userShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(userLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 81, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(38, 38, 38)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 99, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(AIShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(AIHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(0, 111, Short.MAX_VALUE))
+                    .add(smallBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(smallBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 112, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())))
+                            .add(layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(userHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(userShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(userLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 81, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(38, 38, 38)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 99, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(AIShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(AIHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                            .add(statsLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 112, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(50, 50, 50)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -166,65 +166,34 @@ public class SampleScreenEditable extends javax.swing.JFrame {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(smallBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(77, 77, 77)
-                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(statsLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(userLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 57, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(layout.createSequentialGroup()
+                        .add(7, 7, 7)
+                        .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(userHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, AIHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(userShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(AIShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(54, 54, 54))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-            }
-        });
-    }
     
+    //Returns the big board on the screen
     public Board getBigBoard() {
         return this.bigBoard;
     }
     
+    //Returns the small board on the screen
     public Board getSmallBoard() {
         return this.smallBoard;
     }
@@ -233,7 +202,7 @@ public class SampleScreenEditable extends javax.swing.JFrame {
     private javax.swing.JLabel AIHits;
     private javax.swing.JLabel AILabel;
     private javax.swing.JLabel AIShots;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel statsLabel;
     private Board bigBoard;
     private Board smallBoard;
     private javax.swing.JLabel userHits;

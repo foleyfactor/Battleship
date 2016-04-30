@@ -1,58 +1,67 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * GameScreen Class (Window that shows during gameplay)
+ * 
+ * Written by  Alex Foley & James Milne for the 
+ * ICS4UI Software Design Project
  */
 
 package battleship;
 
-/**
- *
- * @author Alex
- */
+//Class declaration
 public class GameScreen extends javax.swing.JFrame {
     
-    boolean isPlacing;
-    Ship currShip;
-    
-    
-    /** Creates new form SampleScreen */
+    //GameScreen constructor
     public GameScreen(String difficulty ) {
+        //Initialize the GUI stuff
         initComponents();
+        
+        //Set the big board and small board to be opponents
         this.bigBoard.setOBoard(this.smallBoard);
-        this.isPlacing = true;
-        this.currShip = new Ship(4, true);
+       
+        //Set the AI on the board based on the game's difficulty
         this.bigBoard.setAI(new AI(this.smallBoard, difficulty));
         
+        //Set the key bindingd for the big board
         this.bigBoard.setKeyBindings();
         
     }
     
+    //Method for drawing the stats on the board
     public void drawStats (){
+        //Initialize all of the guesses and hits to 0
         int AIGuesses = 0;
         int userGuesses = 0;
-        int AIHits = 0;
-        int userHits = 0;
-        for(int i = 0; i<this.getBigBoard().getGuesses().length; i++){
-            for (int j = 0; j<this.getBigBoard().getGuesses().length; j++){
-                if (this.getBigBoard().getGuesses()[i][j]){
+        int numAIHits = 0;
+        int numUserHits = 0;
+        
+        //Loop through all of the squares on the board
+        for(int i = 0; i<this.getBigBoard().getBoardSize(); i++){
+            for (int j = 0; j<this.getBigBoard().getBoardSize(); j++){
+                //If the square is guessed by the user, increment the number of 
+                //guesses
+                if (this.getBigBoard().isGuessed(i, j)){
                     userGuesses++;
-                   if (this.getBigBoard().getShips()[i][j] != null){
-                       userHits++;
+                   //If there is a ship there, increment the number of hits
+                   if (this.getBigBoard().isShip(i, j)){
+                       numUserHits++;
                    }
-                   
                 }
-                if (this.getSmallBoard().getGuesses()[i][j]){
+                //If the square is guessed by the AI, increment the number of 
+                //guesses
+                if (this.getSmallBoard().isGuessed(i, j)){
                     AIGuesses++;
-                   if (this.getSmallBoard().getShips()[i][j] != null){
-                       AIHits++;
+                   //If there is a ship there, increment the number of hits
+                   if (this.getSmallBoard().isShip(i, j)){
+                       numAIHits++;
                    }
                 }
             }
         }
+        //Update the text to reflect the stats calculated
         this.AIShots.setText("Shots: " + AIGuesses);
         this.userShots.setText("Shots: " + userGuesses);
-        this.AIHits.setText("Hits: " + AIHits);
-        this.userHits.setText("Hits: " + userHits);
+        this.AIHits.setText("Hits: " + numAIHits);
+        this.userHits.setText("Hits: " + numUserHits);
     }
    
     
@@ -73,7 +82,7 @@ public class GameScreen extends javax.swing.JFrame {
         AIShots = new javax.swing.JLabel();
         AIHits = new javax.swing.JLabel();
         userShots = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        statsLabel = new javax.swing.JLabel();
 
         bigBoard = new Board(10, 450, true, this);
         bigBoard.addMouseListener(bigBoard);
@@ -120,8 +129,8 @@ public class GameScreen extends javax.swing.JFrame {
 
         userShots.setText("Shots: 0");
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel1.setText("Statistics");
+        statsLabel.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        statsLabel.setText("Statistics");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -145,7 +154,7 @@ public class GameScreen extends javax.swing.JFrame {
                                     .add(AILabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 99, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                     .add(AIShots, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                     .add(AIHits, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 69, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                            .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 112, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                            .add(statsLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 112, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .add(50, 50, 50)))
                 .addContainerGap())
         );
@@ -159,7 +168,7 @@ public class GameScreen extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(smallBoard, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(statsLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(userLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 57, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -179,46 +188,13 @@ public class GameScreen extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GameScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-            }
-        });
-    }
     
+    //Returns the big board on the screen
     public Board getBigBoard() {
         return this.bigBoard;
     }
     
+    //Returns the small board on the screen
     public Board getSmallBoard() {
         return this.smallBoard;
     }
@@ -227,7 +203,7 @@ public class GameScreen extends javax.swing.JFrame {
     private javax.swing.JLabel AIHits;
     private javax.swing.JLabel AILabel;
     private javax.swing.JLabel AIShots;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel statsLabel;
     private Board bigBoard;
     private Board smallBoard;
     private javax.swing.JLabel userHits;

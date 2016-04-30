@@ -1,18 +1,24 @@
 /*
- * AI Class: In charge of generating the moves for the AI in the Battleship game
+ * AI Class
+ * 
+ * Written by  Alex Foley & James Milne for the 
+ * ICS4UI Software Design Project
  */
 
 package battleship;
 
 //Imports
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class AI {
     
     //Class variables
     private Random random;
-    private int[][] potentials;
+    private int[][] potentials, guessFrequency;
     private int[] lastGuess;
     private ArrayList<int[]> neighbours;
     private int lastNumHits, numHits;
@@ -38,6 +44,9 @@ public class AI {
         //Set the AI's board and difficulty based on the constructor arguments
         this.board = b;
         this.difficulty = d;
+        
+        //Get the data from playing against human opponents
+        this.getData();
     }
     
     public int[] alwaysRandomGuess() {
@@ -122,7 +131,7 @@ public class AI {
                 try {
                     //If this coordinate has already been guessed then the 
                     //ship can't be placed here
-                    if (this.board.getGuesses()[y+i][x] && this.board.getShips()[y+i][x] == null) {
+                    if (this.board.isGuessed(y+i, x) && ! this.board.isShip(y+i,x)) {
                         return false;
                     }
                 } catch (Exception e) {
@@ -140,7 +149,7 @@ public class AI {
             try {
                 //If this coordinate has already been guessed then the 
                 //ship can't be placed here
-                if (this.board.getGuesses()[y][x+i] && this.board.getShips()[y][x+i] == null) {
+                if (this.board.isGuessed(y, x+i) && ! this.board.isShip(y, x+i)) {
                     return false;
                 }
             } catch (Exception e) {
@@ -164,9 +173,7 @@ public class AI {
             //Loop through the vertical ship's theoretical position and add 1 to the
             //value if the ship has already been guessed there
             for (int i=0; i<s.getYSize(); i++) {
-                if (this.board.getGuesses()[y+i][x] && this.board.getShips()[y+i][x] != null) {
-                    value ++;
-                }
+                value += this.guessFrequency[y+i][x];
             }
             //Add the value to each of the squares that would have the ship
             for (int i=0; i<s.getYSize(); i++) {
@@ -176,15 +183,64 @@ public class AI {
             int value = 1;
             //Loop through the horizontal ship's theoretical position and add 1 to the
             //coordinates at which it would be placed
-            for (int i=0; i<s.getXSize(); i++) {
-                if (this.board.getGuesses()[y][x+i] && this.board.getShips()[y][x+i] != null) {
-                    value ++;
-                }
+            for (int i=0; i<s.getYSize(); i++) {
+                value += this.guessFrequency[y][x+i];
             }
             
             for (int i=0; i<s.getXSize(); i++) {
                 this.potentials[y][x+i] += value;
             }
+        }
+    }
+    
+    //Method for getting the data on the past placements of ships (so that the AI
+    //can use past ships' placements to infer where ships are more likely to be)
+    public void getData() {
+        try {
+            //Initialize the past frequency array
+            this.guessFrequency = new int[this.board.getBoardSize()][this.board.getBoardSize()];
+            
+            //Setup the file I/O 
+            FileReader r = new FileReader("past_placements.txt");
+            Scanner s = new Scanner(r);
+            
+            //Loop through all of the squares' values in the file
+            for (int i=0; i<this.guessFrequency.length; i++) {
+                for (int j=0; j<this.guessFrequency.length; j++) {
+                    //Read the data into the corresponding array value
+                    this.guessFrequency[i][j] = s.nextInt();
+                }
+            }
+            //Close the file I/O stuff
+            s.close();
+            r.close();
+        } catch (Exception e) {
+            //Necessary for the file I/O because it throws exceptions
+        }
+    }
+    
+    //Method for saving the data regarding the ships' placements to a text file
+    public void saveData() {
+        try {
+            //Create a PrintWriter so that we can write to the file
+            PrintWriter p = new PrintWriter("past_placements.txt");
+            
+            //Loop through all of the squares on the board
+            for (int i=0; i<this.board.getBoardSize(); i++) {
+                for (int j=0; j<this.board.getBoardSize(); j++) {
+                    //If there's a ship there, increment the value for that square
+                    int value = this.board.isShip(i, j) ? this.guessFrequency[i][j] + 1 : this.guessFrequency[i][j];
+                    
+                    //Write the value to the text file
+                    p.print(value + " ");
+                }
+                //Break the line & move on to the next one
+                p.println("");
+            }
+            //Close the writer
+            p.close();
+        } catch (Exception e) {
+            //Necessary for the file I/O stuff
         }
     }
     
@@ -216,7 +272,7 @@ public class AI {
                     }
                     
                     //If the coordinate has already been guessed, and it was a hit
-                    if (this.board.getGuesses()[i][j] && this.board.getShips()[i][j] != null) {
+                    if (this.board.isGuessed(i, j) && this.board.isShip(i, j)) {
                         //Loop through all of the neighbours and add a bonus value
                         //to its current probability
                         for (int x=-1; x<=1; x++) {
